@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My App</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f9fafb; color: #111827; min-height: 100vh; }
+    .container { max-width: 640px; margin: 0 auto; padding: 24px 16px; }
+    h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { color: #6b7280; font-size: 0.9rem; margin-bottom: 24px; }
+    .card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 12px; }
+    button { background: #111827; color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+    button:hover { background: #374151; }
+    #status { margin-top: 16px; font-size: 0.85rem; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>My App</h1>
+    <p class="subtitle">Running inside Chickadee Bandit</p>
+
+    <div class="card">
+      <p id="members-list">Loading family members…</p>
+    </div>
+
+    <button onclick="refresh()">Refresh</button>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    // Chickadee Bandit injects these globals at runtime:
+    //   window.__CONTEXT_URL  → fetch family data (family.members, family.calendar, etc.)
+    //   window.__STORE_URL    → GET/POST per-app key-value store
+    //   window.__APP_ID       → this app's id string
+    const CONTEXT = window.__CONTEXT_URL ?? "/api";
+    const STORE   = window.__STORE_URL   ?? "";
+
+    async function load() {
+      try {
+        const res = await fetch(`${CONTEXT}?keys=family.members`);
+        const ctx = await res.json();
+        const members = ctx["family.members"] ?? [];
+        const list = document.getElementById("members-list");
+        if (!Array.isArray(members) || members.length === 0) {
+          list.textContent = "No family members found.";
+          return;
+        }
+        list.innerHTML = members.map(m =>
+          `<div style="padding:6px 0;border-bottom:1px solid #f3f4f6;">
+            <strong>${m.name}</strong>
+            <span style="color:#9ca3af;font-size:0.8rem;margin-left:8px;">${m.role}</span>
+           </div>`
+        ).join("");
+      } catch (e) {
+        document.getElementById("status").textContent = `Error: ${e.message}`;
+      }
+    }
+
+    function refresh() {
+      document.getElementById("status").textContent = "Refreshing…";
+      load().then(() => { document.getElementById("status").textContent = ""; });
+    }
+
+    load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "id": "my-app",
+  "name": "My App",
+  "version": "1.0.0",
+  "description": "A short description of what this app does.",
+  "entrypoint": "index.html",
+  "runtime": "static",
+  "category": "tools",
+  "tags": [],
+  "data_access": {
+    "reads": [],
+    "writes": []
+  },
+  "permissions": {
+    "default_audience": "everyone",
+    "requires_approval": false
+  }
+}
