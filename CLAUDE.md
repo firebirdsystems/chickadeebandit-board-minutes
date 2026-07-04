@@ -816,6 +816,17 @@ same restrictions.
   silently under-enforced — keep queries against governed tables to simple
   single-table `SELECT`/`INSERT`/`UPDATE`/`DELETE`.
 - On a policy violation, `/api/db` returns `403` with `{ "error": "..." }`.
+- `unique_per_member` is an INSERT-only modifier available on any policy kind.
+  It enforces one row per member per declared scope inside `executeAppSql`.
+- `frozen_when` is a write-freeze modifier available on any policy kind:
+  `{ "status_column": "status", "locked_values": ["adopted", "closed"] }`.
+  Use it when a row should become immutable after a lifecycle state, such as
+  board minutes after adoption, closed trivia rounds, or archived sheets. For
+  normal tables, `status_column` lives on that table. For `inherit_visibility`
+  and `owner_only_with_fk_check` child tables, it lives on the parent/FK table,
+  so child comments, votes, amendments, and records cannot be changed after the
+  parent locks. The status column must be plaintext: `status` is built in; list
+  custom enum columns in `db_plaintext_columns`.
 
 ### Policy kinds
 
@@ -882,6 +893,67 @@ Read-all, **write-none via `/api/db`**. The only writer is `POST /run/{app}/api/
 ```
 
 Example: piggy-bank `piggy_banks`/`transactions` — a child only sees their own bank/transactions; adults (parents) see everyone's. Vote receipts for attributed polls — each member can see their own receipt (confirming they voted), but all receipt creation goes through the `submit-response` hub endpoint.
+
+#### `unique_per_member` — one row per member per scope
+
+Use `unique_per_member` when the row is **not secret** but each member should only
+be able to create one row within a logical scope: one RSVP per event, one rating
+per watchlist title, one guess per trivia round, one claim per slot.
+
+```json
+{
+  "kind": "owner_only",
+  "member_column": "member_id",
+  "adults_bypass": false,
+  "unique_per_member": {
+    "member_column": "member_id",
+    "scope_columns": ["event_id"]
+  }
+}
+```
+
+- Applies only to `INSERT`; it does not make existing rows immutable.
+- The `member_column` and every `scope_columns` entry must be explicitly present
+  in the INSERT column list. The policy first applies the base row policy, so
+  owner policies still force the member column to the caller before the uniqueness
+  check runs.
+- The hub rejects duplicates already in the table and duplicates within the same
+  multi-row INSERT. On violation, `/api/db` returns `403`.
+- This is for **attributed/non-secret** participation. If the answer or ballot
+  must not be linkable to the member, use `anonymous_responses` or
+  `anonymous_ballot` with a receipt table instead.
+
+#### `frozen_when` — immutable after adopted / closed / archived
+
+Use `frozen_when` when a table remains writable during drafting or play, but
+must stop accepting app-originated writes after a lifecycle state:
+
+```json
+{
+  "kind": "owner_or_visibility",
+  "member_column": "created_by",
+  "visibility_column": "visibility",
+  "everyone_values": ["household"],
+  "write_visibility_scoped": true,
+  "frozen_when": {
+    "status_column": "status",
+    "locked_values": ["adopted", "closed"]
+  }
+}
+```
+
+- Applies to `UPDATE` and `DELETE` of the row once its current status is locked.
+  Transitioning into a locked status is allowed; later writes are blocked.
+- On `inherit_visibility` and `owner_only_with_fk_check` child tables, the hub
+  checks the parent/FK row's `status_column` instead. This is how comments,
+  votes, append-like children, or amendments become immutable after the parent
+  board minute, round, sheet, or case closes.
+- The `status_column` must be plaintext. `status` is already plaintext; custom
+  lifecycle columns such as `round_state` or `workflow_state` must be listed in
+  `db_plaintext_columns` before they can be used by `frozen_when`.
+- Do not use `INSERT ... ON CONFLICT DO UPDATE` against a frozen table; the hub
+  rejects upsert updates because they could otherwise mutate an already-locked
+  row through the conflict tail.
 
 #### `owner_only_with_fk_check` — like `owner_only`, but the row references another owned row
 
@@ -1022,6 +1094,7 @@ their own violations; board members see/log on any violation); document-library
 | Same, but non-adults should only read their own rows | `adult_writable` with `member_read_column` |
 | Settings row that names a privileged group (board_group_id, committee_group_id) | `app_config` |
 | One row per member, only that member (and maybe adults) should see it | `owner_only` |
+| One attributed submission per member per event/round/title/slot | Any suitable row policy plus `unique_per_member` |
 | Same, but writes must go through a hub endpoint (e.g. vote receipts) | `owner_only` with `endpoint_writes_only: true` |
 | Like the above, but the row references another owned row (e.g. a transaction against a bank) | `owner_only_with_fk_check` |
 | A row can be private, shared with adults, or shared with everyone | `owner_or_visibility` |
