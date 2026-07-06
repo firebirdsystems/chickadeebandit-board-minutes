@@ -56,7 +56,8 @@ dist/
 | `category` | No | e.g. `health`, `finance`, `games`, `tools` |
 | `tags` | No | Array of strings for filtering |
 | `nav` | No | `{ "label": "..." }` — adds the app to the hub's top navigation bar. Uses `icon` automatically. Omit for infrequently-accessed apps. |
-| `widget` | No | `{ "label": "...", "size": "small" \| "medium" \| "large" }` — shows a summary tile on the dashboard |
+| `widget` | No | `{ "label": "...", "size": "small" \| "medium" \| "large" }` — shows an iframe summary tile on the dashboard (needs a `widget.html`) |
+| `glance` | No | `"storage": "db"` apps only — a lightweight, hub-rendered dashboard tile (one SQL query + a display template, no iframe, no extra HTML). See "Glance widgets" below. |
 | `row_policies` | No | `"storage": "db"` apps only — hub-enforced per-table row access rules (private data, board/committee-only tables, etc.). See "Row-level access control" in CLAUDE.md. |
 
 ### resource_limits
@@ -75,6 +76,33 @@ Declare `resource_limits` even when accepting defaults, so limits are explicit:
 ```
 
 Apps with `"storage": "none"` do not need `resource_limits`.
+
+### Glance widgets
+
+A **glance** is a lightweight dashboard tile the hub renders itself from one read-only SQL query — no iframe, no `widget.html`, no app code. Prefer it over `widget` for a simple "one number / short list / alert count" summary; reach for `widget` only when the tile needs real interactivity. `"storage": "db"` apps only.
+
+```jsonc
+"glance": {
+  "source": {
+    "kind": "sql",
+    // A single SELECT over your OWN prefixed tables, with a small LIMIT.
+    // Runs through the same path as /api/db — your row_policies and column
+    // decryption apply, and the query is shown in the admin approval diff.
+    "query": "SELECT COUNT(*) AS n FROM app_myapp__items WHERE checked = 0 LIMIT 1"
+  },
+  "display": { "template": "badge", "count": "n", "label": "to buy", "severity": "info" }
+}
+```
+
+Three display templates — every column a template names must appear in the query's `SELECT` list (alias with `AS` as needed):
+
+| Template | Reads | Fields |
+|---|---|---|
+| `stat` | row 0 | `value` (column), `label` (static text), optional `empty_hides` (hide the tile when the value is 0/empty) |
+| `list` | up to 5 rows | `title` (column), optional `subtitle` (column), optional `when` (column holding an ISO date/time, shown as a relative "in 3d") |
+| `badge` | row 0 | `count` (column), `label` (static text), optional `severity` (`info` \| `warn` \| `alert`) — a count of 0 hides the tile |
+
+Query rules (enforced by `node build.mjs` manifest validation): exactly one `SELECT`; only your own `app_{appId}__` tables; a `LIMIT` between 1 and 10; explicit named columns (no `SELECT *`). Tapping the tile opens your app. A glance whose query fails is silently dropped, so it never breaks the dashboard. Reference apps: `grocery` (badge), `chores` (stat), `calendar` (list).
 
 ### Available data_access keys
 
