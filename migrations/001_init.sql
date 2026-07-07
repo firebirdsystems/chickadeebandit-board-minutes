@@ -1,43 +1,72 @@
-CREATE TABLE IF NOT EXISTS app_potluck__events (
-  id TEXT PRIMARY KEY,
-  title TEXT NOT NULL,
-  date TEXT NOT NULL,
-  location TEXT DEFAULT '',
-  notes TEXT DEFAULT '',
-  created_by_id TEXT NOT NULL,
-  created_by_name TEXT NOT NULL,
-  created_at TEXT NOT NULL,
-  archived INTEGER NOT NULL DEFAULT 0
+-- One row per board meeting's minutes. Written ONLY by the configured board group
+-- (owner_or_visibility + write_privileged_only). Drafts are visible to the board
+-- (privileged_values 'draft'); adopted minutes are visible to everyone
+-- (everyone_values 'adopted'). Once adopted, the row is frozen (frozen_when) so
+-- the record is immutable. `status` is plaintext (encryption skip-list).
+CREATE TABLE IF NOT EXISTS app_board_minutes__meetings (
+  id           TEXT NOT NULL,
+  title        TEXT NOT NULL DEFAULT '',
+  meeting_date TEXT NOT NULL,
+  location     TEXT NOT NULL DEFAULT '',
+  attendees    TEXT NOT NULL DEFAULT '',
+  notes        TEXT NOT NULL DEFAULT '',
+  status       TEXT NOT NULL DEFAULT 'draft',   -- draft | adopted
+  created_by   TEXT NOT NULL,
+  created_at   TEXT NOT NULL,
+  updated_at   TEXT NOT NULL,
+  adopted_at   TEXT,
+  PRIMARY KEY (id)
 );
 
-CREATE TABLE IF NOT EXISTS app_potluck__slots (
-  id TEXT PRIMARY KEY,
-  event_id TEXT NOT NULL,
-  name TEXT NOT NULL,
-  capacity INTEGER NOT NULL DEFAULT 1 CHECK (capacity > 0),
-  sort_order INTEGER NOT NULL DEFAULT 0,
-  created_at TEXT NOT NULL,
-  FOREIGN KEY (event_id) REFERENCES app_potluck__events(id) ON DELETE CASCADE
+CREATE INDEX IF NOT EXISTS app_board_minutes__meetings_status_idx
+  ON app_board_minutes__meetings (status, meeting_date);
+
+-- Structured motions belonging to a meeting. Inherit the meeting's visibility;
+-- only the board may create them (insert_privileged_only), and they freeze when
+-- the parent meeting is adopted (frozen_when reads meetings.status). `outcome` is
+-- plaintext so it can be filtered/tallied.
+CREATE TABLE IF NOT EXISTS app_board_minutes__motions (
+  id           TEXT NOT NULL,
+  meeting_id   TEXT NOT NULL,
+  text         TEXT NOT NULL DEFAULT '',
+  moved_by     TEXT NOT NULL DEFAULT '',
+  seconded_by  TEXT NOT NULL DEFAULT '',
+  outcome      TEXT NOT NULL DEFAULT 'open',   -- open | carried | failed | tabled | withdrawn
+  sort_order   INTEGER NOT NULL DEFAULT 0,
+  recorded_by  TEXT NOT NULL,
+  created_at   TEXT NOT NULL,
+  updated_at   TEXT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (meeting_id) REFERENCES app_board_minutes__meetings(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS app_potluck__claims (
-  id TEXT PRIMARY KEY,
-  event_id TEXT NOT NULL,
-  slot_id TEXT NOT NULL,
-  member_id TEXT NOT NULL,
-  member_name TEXT NOT NULL,
-  note TEXT DEFAULT '',
-  claimed_at TEXT NOT NULL,
-  FOREIGN KEY (event_id) REFERENCES app_potluck__events(id) ON DELETE CASCADE,
-  FOREIGN KEY (slot_id) REFERENCES app_potluck__slots(id) ON DELETE CASCADE,
-  UNIQUE (slot_id, member_id)
+CREATE INDEX IF NOT EXISTS app_board_minutes__motions_meeting_idx
+  ON app_board_minutes__motions (meeting_id, sort_order);
+
+-- Recorded roll-call votes: one per board member per motion (unique_per_member).
+-- Each board member records their OWN vote (writer_column voter_id is forced to
+-- the caller). Votes inherit the meeting's visibility and freeze on adoption.
+-- `vote` is plaintext so the tally can be computed in SQL.
+CREATE TABLE IF NOT EXISTS app_board_minutes__votes (
+  id          TEXT NOT NULL,
+  meeting_id  TEXT NOT NULL,
+  motion_id   TEXT NOT NULL,
+  voter_id    TEXT NOT NULL,
+  vote        TEXT NOT NULL,   -- yea | nay | abstain
+  created_at  TEXT NOT NULL,
+  updated_at  TEXT NOT NULL,
+  PRIMARY KEY (id)
 );
 
-CREATE INDEX IF NOT EXISTS app_potluck__events_date_idx
-  ON app_potluck__events(date, archived);
+CREATE INDEX IF NOT EXISTS app_board_minutes__votes_motion_idx
+  ON app_board_minutes__votes (motion_id, voter_id);
+CREATE INDEX IF NOT EXISTS app_board_minutes__votes_meeting_idx
+  ON app_board_minutes__votes (meeting_id);
 
-CREATE INDEX IF NOT EXISTS app_potluck__slots_event_idx
-  ON app_potluck__slots(event_id, sort_order);
-
-CREATE INDEX IF NOT EXISTS app_potluck__claims_slot_idx
-  ON app_potluck__claims(slot_id, claimed_at);
+-- key/value settings: board_group_id. Written only by the admin-gated
+-- /api/admin-config endpoint (app_config policy).
+CREATE TABLE IF NOT EXISTS app_board_minutes__settings (
+  key    TEXT NOT NULL,
+  value  TEXT NOT NULL DEFAULT '',
+  PRIMARY KEY (key)
+);

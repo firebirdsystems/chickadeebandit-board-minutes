@@ -1,47 +1,80 @@
 {
-  "id": "potluck",
-  "name": "Potluck",
+  "id": "board-minutes",
+  "name": "Board Minutes",
   "version": "1.0.0",
-  "description": "Create gatherings with dish slots and let members claim, swap, and release dishes without overbooking a category.",
+  "description": "Keep official board meeting minutes with structured motions, seconds, and recorded per-member votes. Drafts stay editable; once minutes are adopted they become an immutable public record.",
   "entrypoint": "index.html",
   "runtime": "static",
-  "category": "family",
-  "tags": ["food", "events", "potluck", "slot-claims"],
+  "category": "organization",
+  "tags": ["hoa", "board", "minutes", "motions", "votes", "governance"],
   "data_access": {
-    "reads": ["family.members"],
-    "writes": ["family.members"]
+    "reads": ["family.members", "family.groups"],
+    "writes": []
   },
   "permissions": {
     "default_audience": "everyone",
     "requires_approval": false
   },
   "storage": "db",
+  "db_plaintext_columns": ["outcome", "vote"],
   "row_policies": {
-    "events": {
-      "kind": "adult_writable"
-    },
-    "slots": {
-      "kind": "adult_writable"
-    },
-    "claims": {
-      "kind": "owner_only",
-      "member_column": "member_id",
-      "adults_bypass": true,
-      "unique_per_member": {
-        "member_column": "member_id",
-        "scope_columns": ["event_id", "slot_id"]
+    "meetings": {
+      "kind": "owner_or_visibility",
+      "member_column": "created_by",
+      "visibility_column": "status",
+      "everyone_values": ["adopted"],
+      "privileged_groups": [
+        { "settings_table": "settings", "settings_key": "board_group_id" }
+      ],
+      "privileged_values": ["draft"],
+      "write_privileged_only": true,
+      "frozen_when": {
+        "status_column": "status",
+        "locked_values": ["adopted"]
       }
+    },
+    "motions": {
+      "kind": "inherit_visibility",
+      "fk_column": "meeting_id",
+      "parent_table": "meetings",
+      "writer_column": "recorded_by",
+      "insert_privileged_only": true,
+      "frozen_when": {
+        "status_column": "status",
+        "locked_values": ["adopted"]
+      }
+    },
+    "votes": {
+      "kind": "inherit_visibility",
+      "fk_column": "meeting_id",
+      "parent_table": "meetings",
+      "writer_column": "voter_id",
+      "insert_privileged_only": true,
+      "unique_per_member": {
+        "member_column": "voter_id",
+        "scope_columns": ["motion_id"]
+      },
+      "frozen_when": {
+        "status_column": "status",
+        "locked_values": ["adopted"]
+      }
+    },
+    "settings": {
+      "kind": "app_config"
     }
   },
-  "publishes": ["potluck.event_created", "potluck.slot_claimed", "potluck.slot_released"],
-  "nav": { "label": "Potluck" },
-  "resource_limits": {
-    "max_db_bytes": 52428800
+  "admin_config": {
+    "settings_table": "settings",
+    "keys": ["board_group_id"]
   },
-  "icon": "🍽️",
+  "nav": { "label": "Board Minutes" },
+  "resource_limits": {
+    "max_db_bytes": 104857600
+  },
+  "icon": "🏛️",
   "ai_access": {
     "allowed": true,
     "mode": "read",
-    "db_exports": ["upcoming_potlucks", "claim_summary"]
+    "db_exports": ["adopted_minutes", "vote_tally"]
   }
 }

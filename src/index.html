@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Potluck</title>
+  <title>Board Minutes</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -27,52 +27,40 @@
       --shadow: 0 1px 3px rgba(15, 23, 42, .07);
     }
     body {
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
+      min-height: 100vh; background: var(--bg); color: var(--text);
       font-family: var(--hub-font, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
-      font-size: var(--hub-font-size, 15px);
-      line-height: 1.5;
+      font-size: var(--hub-font-size, 15px); line-height: 1.5;
     }
-    .app { max-width: 820px; margin: 0 auto; padding: 16px; }
-    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .app { max-width: 780px; margin: 0 auto; padding: 16px; }
+    .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
     h1 { font-size: 1.35rem; line-height: 1.2; }
     h2 { font-size: 1rem; margin-bottom: 10px; }
+    h3 { font-size: 1.05rem; margin-bottom: 12px; }
     .muted { color: var(--muted); }
     .tiny { font-size: .78rem; }
-    .stack { display: grid; gap: 12px; }
-    .grid { display: grid; gap: 12px; }
+    .stack { display: grid; gap: 10px; }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px;
     }
-    .event-card { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
-    .event-card:hover { border-color: var(--border-mid); box-shadow: 0 5px 14px rgba(15, 23, 42, .08); }
-    .event-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-    .event-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-    .event-title { font-weight: 750; font-size: 1rem; }
-    .event-meta { margin-top: 3px; color: var(--muted); font-size: .82rem; }
-    .progress { height: 8px; overflow: hidden; border-radius: 999px; background: #eef2f7; margin-top: 10px; }
-    .progress > span { display: block; height: 100%; background: var(--green); border-radius: 999px; }
+    .clickable { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
+    .clickable:hover { border-color: var(--border-mid); box-shadow: 0 5px 14px rgba(15, 23, 42, .08); }
+    .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .title { font-weight: 750; font-size: 1.02rem; }
+    .meta { margin-top: 2px; color: var(--muted); font-size: .82rem; }
     .pill {
-      display: inline-flex; align-items: center; justify-content: center;
-      min-height: 24px; padding: 2px 8px; border-radius: 999px;
-      background: #f1f5f9; color: var(--muted); font-size: .74rem; font-weight: 700; white-space: nowrap;
+      display: inline-flex; align-items: center; justify-content: center; min-height: 22px;
+      padding: 2px 9px; border-radius: 999px; background: #f1f5f9; color: var(--muted);
+      font-size: .72rem; font-weight: 700; white-space: nowrap;
     }
     .pill.good { background: var(--green-soft); color: var(--green); }
     .pill.warn { background: var(--amber-soft); color: var(--amber); }
+    .pill.bad  { background: var(--red-soft); color: var(--red); }
     .pill.info { background: var(--blue-soft); color: #1d4ed8; }
     .tabs { display: flex; gap: 4px; background: var(--border); padding: 3px; border-radius: 10px; margin-bottom: 14px; }
     .tab { flex: 1; border: 0; border-radius: 8px; background: transparent; color: var(--muted); padding: 7px; font-weight: 700; cursor: pointer; }
     .tab.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
-    .section-head {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 10px; margin: 6px 2px 10px;
-    }
-    .section-head h2 { margin-bottom: 0; }
     .btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 6px;
       border: 1px solid transparent; border-radius: 8px; padding: 8px 12px;
@@ -85,106 +73,83 @@
     .btn-ghost:hover { background: #f8fafc; }
     .btn-danger { background: var(--red-soft); color: var(--red); border-color: transparent; }
     .btn-danger:hover { background: #fecaca; }
-    .btn-quiet-danger {
-      min-height: 28px; padding: 3px 6px; background: transparent; color: var(--muted);
-      border: 0; font-size: .76rem; font-weight: 700;
-    }
-    .btn-quiet-danger:hover { background: var(--red-soft); color: var(--red); }
     .btn-sm { min-height: 31px; padding: 5px 9px; font-size: .78rem; }
-    .back { margin-bottom: 10px; }
-    .slot {
-      display: grid; gap: 10px; padding: 12px 0; border-top: 1px solid var(--border);
-    }
-    .slot:first-child { border-top: 0; padding-top: 0; }
-    .slot-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-    .slot-name { font-weight: 750; }
-    .claims { display: flex; flex-wrap: wrap; gap: 6px; }
-    .claim-chip {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: #f8fafc; border: 1px solid var(--border);
-      border-radius: 999px; padding: 3px 8px 3px 4px; font-size: .78rem;
-    }
-    .avatar {
-      width: 22px; height: 22px; border-radius: 50%;
-      display: inline-flex; align-items: center; justify-content: center;
-      color: white; font-size: .72rem; font-weight: 800; background: #0f766e;
-    }
-    .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .form { display: grid; gap: 10px; }
+    .btn-vote { border: 1.5px solid var(--border-mid); background: var(--surface); color: var(--text); }
+    .btn-vote.on-yea { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+    .btn-vote.on-nay { background: var(--red-soft); border-color: var(--red); color: var(--red); }
+    .btn-vote.on-abstain { background: var(--amber-soft); border-color: var(--amber); color: var(--amber); }
     .field { display: grid; gap: 4px; }
     label { font-size: .76rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 800; }
-    input, textarea {
+    input, select, textarea {
       width: 100%; border: 1.5px solid var(--border-mid); border-radius: 8px;
       padding: 9px 11px; font: inherit; background: var(--surface); color: var(--text);
     }
-    textarea { min-height: 72px; resize: vertical; }
-    input:focus, textarea:focus { outline: none; border-color: var(--accent); }
-    .slot-builder { display: grid; gap: 8px; }
-    .slot-row { display: grid; grid-template-columns: 1fr 74px auto; gap: 8px; align-items: center; }
+    textarea { min-height: 64px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
     .empty, .loading { color: var(--muted); text-align: center; padding: 32px 16px; }
     .error { background: var(--red-soft); color: var(--red); padding: 9px 12px; border-radius: 8px; margin-bottom: 10px; font-size: .86rem; }
     .notice { background: var(--amber-soft); color: var(--amber); padding: 9px 12px; border-radius: 8px; margin-bottom: 10px; font-size: .86rem; }
-    @media (min-width: 700px) {
-      .grid.two { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 560px) {
-      .topbar, .event-head, .slot-top { align-items: stretch; flex-direction: column; }
-      .slot-row { grid-template-columns: 1fr; }
-      .actions .btn { flex: 1; }
-    }
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 6px 2px 10px; }
+    .section-head h2 { margin-bottom: 0; }
+    .back { margin-bottom: 10px; }
+    .motion { border-top: 1px solid var(--border); padding: 12px 0; }
+    .motion:first-child { border-top: 0; padding-top: 0; }
+    .motion-text { font-weight: 650; }
+    .tally { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .vote-chip { display: inline-flex; align-items: center; gap: 6px; background: #f8fafc; border: 1px solid var(--border); border-radius: 999px; padding: 3px 9px 3px 4px; font-size: .76rem; }
+    .avatar { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: .68rem; font-weight: 800; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, .45); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; }
+    .modal { background: var(--surface); border-radius: 12px; padding: 18px; width: 100%; max-width: 460px; box-shadow: 0 20px 40px rgba(15, 23, 42, .25); max-height: 90vh; overflow-y: auto; }
+    .modal .field { margin-bottom: 12px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    @media (max-width: 520px) { .head { flex-direction: column; align-items: stretch; } }
   </style>
-  <base href="/run/potluck/">
+  <base href="/run/board-minutes/">
 </head>
 <body>
 <div class="app">
-  <div id="root" class="loading">Loading...</div>
+  <div id="root" class="loading">Loading…</div>
 </div>
 
 <script type="module">
-import { esc, isAdult, memberColor, initial, hubConfirm } from "/hub-sdk.js";
+import { esc, memberColor, initial, hubConfirm } from "/hub-sdk.js";
+import {
+  VOTE_VALUES, MOTION_OUTCOMES, outcomeLabel,
+  isBoard as _isBoard, isAdopted, canEditMeeting as _canEdit,
+  tally, myVote, votesForMotion, suggestedOutcome,
+} from "./logic.js";
 
-const CONTEXT = window.__CONTEXT_URL ?? "";
-const DB = window.__DB_URL ?? "";
-const HUB_MEMBER = window.__CURRENT_MEMBER ?? null;
+const CONTEXT          = window.__CONTEXT_URL      ?? "";
+const DB               = window.__DB_URL           ?? "";
+const ADMIN_CONFIG_URL = window.__ADMIN_CONFIG_URL ?? "";
+const ME       = window.__CURRENT_MEMBER ?? null;
+const IS_ADMIN = !!window.__IS_ADMIN;
 
 let members = [];
-let currentMember = null;
-let events = [];
-let slots = [];
-let claims = [];
-let selectedEventId = null;
-let view = "upcoming";
+let memberMap = new Map();
+let groups = [];
+let settings = { board_group_id: null };
+let meetings = [];
+let motions = [];
+let votes = [];
+let detailId = null;
+let tab = "adopted";
 let error = "";
 let notice = "";
-let draftSlots = [
-  { name: "Turkey", capacity: 1 },
-  { name: "Sides", capacity: 4 },
-  { name: "Desserts", capacity: 2 },
-];
+let modalEl = null;
 
-function nowIso() { return new Date().toISOString(); }
-function uid(prefix) { return `${prefix}-${crypto.randomUUID()}`; }
-function today() { return new Date().toISOString().slice(0, 10); }
-function fmtDate(value) {
-  if (!value) return "";
-  return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", year: "numeric" })
-    .format(new Date(`${value}T12:00:00`));
-}
-function memberById(id) { return members.find(m => m.id === id) ?? null; }
-function canCreate() { return isAdult(currentMember); }
-function selectedEvent() { return events.find(e => e.id === selectedEventId) ?? null; }
-function eventSlots(eventId) { return slots.filter(s => s.event_id === eventId).sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name)); }
-function slotClaims(slotId) { return claims.filter(c => c.slot_id === slotId).sort((a, b) => a.claimed_at.localeCompare(b.claimed_at)); }
-function myClaim(slotId) { return claims.find(c => c.slot_id === slotId && c.member_id === currentMember?.id) ?? null; }
-function claimedCount(slotId) { return slotClaims(slotId).length; }
-function eventTotals(eventId) {
-  const ss = eventSlots(eventId);
-  const capacity = ss.reduce((sum, s) => sum + Number(s.capacity || 0), 0);
-  const claimed = ss.reduce((sum, s) => sum + claimedCount(s.id), 0);
-  return { claimed, capacity, pct: capacity ? Math.min(100, Math.round((claimed / capacity) * 100)) : 0 };
-}
+const nowIso = () => new Date().toISOString();
+const uid = (p) => `${p}-${crypto.randomUUID()}`;
+const today = () => new Date().toISOString().slice(0, 10);
 
-async function dbq(sql, params = []) {
+function isBoard() { return _isBoard(ME, groups, settings.board_group_id); }
+function boardConfigured() { return !!settings.board_group_id && !!groups.find(g => g.id === settings.board_group_id); }
+function canEdit(meeting) { return _canEdit(meeting, ME, groups, settings.board_group_id); }
+function meetingById(id) { return meetings.find(m => m.id === id) ?? null; }
+function motionsFor(meetingId) { return motions.filter(m => m.meeting_id === meetingId).sort((a, b) => a.sort_order - b.sort_order || a.created_at.localeCompare(b.created_at)); }
+
+async function db(sql, params = []) {
   if (!DB) return { rows: [] };
   const res = await fetch(DB, {
     method: "POST",
@@ -196,384 +161,581 @@ async function dbq(sql, params = []) {
   return json;
 }
 
-async function loadMembers() {
-  if (!CONTEXT) {
-    members = [
-      { id: "demo-1", name: "Alex", role: "adult" },
-      { id: "demo-2", name: "Jordan", role: "adult" },
-      { id: "demo-3", name: "Casey", role: "child" },
-      { id: "demo-4", name: "Riley", role: "child" },
-    ];
-  } else {
-    const res = await fetch(`${CONTEXT}?keys=family.members`);
-    members = ((await res.json())["family.members"]) ?? [];
+async function saveSetting(key, value) {
+  const res = await fetch(ADMIN_CONFIG_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ key, value }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error ?? "Save failed");
   }
-  currentMember = HUB_MEMBER ?? members[0] ?? { id: "guest", name: "Guest", role: "adult" };
 }
 
-async function seedDemo() {
-  if (DB) return;
-  const eventId = "demo-thanksgiving";
-  events = [{
-    id: eventId, title: "Thanksgiving Dinner", date: today(), location: "Home",
-    notes: "Claim what you are bringing so the table balances out.",
-    created_by_id: "demo-1", created_by_name: "Alex", created_at: nowIso(), archived: 0,
-  }];
-  slots = [
-    { id: "slot-turkey", event_id: eventId, name: "Turkey", capacity: 1, sort_order: 0 },
-    { id: "slot-sides", event_id: eventId, name: "Sides", capacity: 4, sort_order: 1 },
-    { id: "slot-desserts", event_id: eventId, name: "Desserts", capacity: 2, sort_order: 2 },
-  ];
-  claims = [{ id: "claim-1", event_id: eventId, slot_id: "slot-desserts", member_id: "demo-2", member_name: "Jordan", note: "Apple pie", claimed_at: nowIso() }];
+// ── Loading ───────────────────────────────────────────────────────────────────
+
+async function loadContext() {
+  if (!CONTEXT) {
+    members = [
+      { id: "demo-1", name: "Alex",   role: "adult" },
+      { id: "demo-2", name: "Jordan", role: "adult" },
+      { id: "demo-3", name: "Sam",    role: "adult" },
+    ];
+    groups = [{ id: "board", name: "Board", memberIds: ["demo-1", "demo-2", "demo-3"] }];
+    memberMap = new Map(members.map(m => [m.id, m]));
+    return;
+  }
+  try {
+    const res = await fetch(`${CONTEXT}?keys=family.members,family.groups`);
+    const data = await res.json();
+    members = data["family.members"] ?? [];
+    groups  = data["family.groups"]  ?? [];
+  } catch { members = []; groups = []; }
+  memberMap = new Map(members.map(m => [m.id, m]));
+}
+
+async function loadSettings() {
+  if (!DB) { settings = { board_group_id: "board" }; return; }
+  try {
+    const { rows } = await db(`SELECT key, value FROM app_board_minutes__settings WHERE key = 'board_group_id'`);
+    for (const r of rows) if (r.key === "board_group_id") settings.board_group_id = r.value || null;
+  } catch { /* leave defaults */ }
 }
 
 async function loadData() {
-  if (!DB) { await seedDemo(); return; }
-  const [eventRows, slotRows, claimRows] = await Promise.all([
-    dbq("SELECT * FROM app_potluck__events WHERE archived = 0 ORDER BY date ASC, created_at ASC"),
-    dbq("SELECT * FROM app_potluck__slots ORDER BY sort_order ASC, name ASC"),
-    dbq("SELECT * FROM app_potluck__claims ORDER BY claimed_at ASC"),
+  if (!DB) { seedDemo(); return; }
+  // Row policies scope `meetings` (drafts board-only, adopted everyone) and the
+  // inherited motions/votes accordingly.
+  const [meetingRows, motionRows, voteRows] = await Promise.all([
+    db(`SELECT * FROM app_board_minutes__meetings ORDER BY meeting_date DESC LIMIT 300`),
+    db(`SELECT * FROM app_board_minutes__motions ORDER BY sort_order ASC LIMIT 1000`),
+    db(`SELECT * FROM app_board_minutes__votes LIMIT 3000`),
   ]);
-  events = eventRows.rows.map(e => ({ ...e, archived: !!e.archived }));
-  slots = slotRows.rows;
-  claims = claimRows.rows;
+  meetings = meetingRows.rows;
+  motions = motionRows.rows;
+  votes = voteRows.rows;
+}
+
+function seedDemo() {
+  meetings = [
+    { id: "m1", title: "March Regular Meeting", meeting_date: "2026-03-04", location: "Clubhouse", attendees: "Alex, Jordan, Sam", notes: "Quorum met at 7:03pm.", status: "adopted", created_by: "demo-1", created_at: nowIso(), adopted_at: nowIso() },
+    { id: "m2", title: "April Regular Meeting", meeting_date: today(), location: "Clubhouse", attendees: "Alex, Jordan", notes: "", status: "draft", created_by: "demo-1", created_at: nowIso(), adopted_at: null },
+  ];
+  motions = [
+    { id: "mo1", meeting_id: "m1", text: "Approve the landscaping contract with GreenScape for $12,400.", moved_by: "demo-1", seconded_by: "demo-2", outcome: "carried", sort_order: 0, recorded_by: "demo-1", created_at: nowIso() },
+    { id: "mo2", meeting_id: "m2", text: "Approve repainting the west fence this spring.", moved_by: "demo-2", seconded_by: "", outcome: "open", sort_order: 0, recorded_by: "demo-1", created_at: nowIso() },
+  ];
+  votes = [
+    { id: "vt1", meeting_id: "m1", motion_id: "mo1", voter_id: "demo-1", vote: "yea" },
+    { id: "vt2", meeting_id: "m1", motion_id: "mo1", voter_id: "demo-2", vote: "yea" },
+    { id: "vt3", meeting_id: "m1", motion_id: "mo1", voter_id: "demo-3", vote: "abstain" },
+  ];
 }
 
 async function refresh() {
   clearMessages();
   try {
-    await loadMembers();
+    await Promise.all([loadContext(), loadSettings()]);
     await loadData();
-    if (selectedEventId && !events.some(e => e.id === selectedEventId)) selectedEventId = null;
+    if (detailId && !meetingById(detailId)) detailId = null;
     render();
-  } catch (e) {
-    error = e.message;
-    render();
-  }
+  } catch (e) { error = e.message; render(); }
 }
 
 function clearMessages() { error = ""; notice = ""; }
-function showError(message) { error = message; notice = ""; render(); }
-function showNotice(message) { notice = message; error = ""; render(); }
+function showError(m) { error = m; notice = ""; render(); }
+function showNotice(m) { notice = m; error = ""; render(); }
 
-async function createEvent(form) {
-  if (!canCreate()) return showError("Only adults and leadership can create potlucks.");
+// ── Meeting actions (board only) ────────────────────────────────────────────────
+
+async function submitMeetingForm(form) {
+  if (!isBoard()) return showError("Only the board can create minutes.");
   const title = form.title.value.trim();
-  const date = form.date.value;
+  const meeting_date = form.meeting_date.value;
   const location = form.location.value.trim();
+  const attendees = form.attendees.value.trim();
   const notes = form.notes.value.trim();
-  const cleanSlots = draftSlots
-    .map((s, index) => ({ ...s, name: s.name.trim(), capacity: Math.max(1, Number(s.capacity) || 1), sort_order: index }))
-    .filter(s => s.name);
-  if (!title || !date || cleanSlots.length === 0) return showError("Add a title, date, and at least one dish slot.");
-
-  const event = {
-    id: uid("potluck"), title, date, location, notes,
-    created_by_id: currentMember.id, created_by_name: currentMember.name, created_at: nowIso(), archived: 0,
-  };
-  const eventSlotsToInsert = cleanSlots.map(s => ({ ...s, id: uid("slot"), event_id: event.id, created_at: nowIso() }));
-
-  try {
-    if (DB) {
-      await dbq(
-        `INSERT INTO app_potluck__events (id, title, date, location, notes, created_by_id, created_by_name, created_at, archived)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
-        [event.id, event.title, event.date, event.location, event.notes, event.created_by_id, event.created_by_name, event.created_at]
-      );
-      for (const s of eventSlotsToInsert) {
-        await dbq(
-          `INSERT INTO app_potluck__slots (id, event_id, name, capacity, sort_order, created_at)
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [s.id, s.event_id, s.name, s.capacity, s.sort_order, s.created_at]
-        );
-      }
-    }
-    events = [...events, event].sort((a, b) => a.date.localeCompare(b.date));
-    slots = [...slots, ...eventSlotsToInsert];
-    selectedEventId = event.id;
-    view = "upcoming";
-    showNotice("Potluck created.");
-  } catch (e) {
-    showError(e.message);
-  }
-}
-
-async function claimSlot(slotId) {
-  const slot = slots.find(s => s.id === slotId);
-  if (!slot || !currentMember) return false;
-  if (myClaim(slotId)) { showError("You already claimed this slot."); return false; }
-  if (claimedCount(slotId) >= Number(slot.capacity)) { showError("That slot is already full."); return false; }
-  const claim = {
-    id: uid("claim"), event_id: slot.event_id, slot_id: slot.id,
-    member_id: currentMember.id, member_name: currentMember.name, note: "", claimed_at: nowIso(),
+  if (!title || !meeting_date) { showError("Add a title and a meeting date."); return; }
+  const meeting = {
+    id: uid("meeting"), title, meeting_date, location, attendees, notes,
+    status: "draft", created_by: ME.id, created_at: nowIso(), updated_at: nowIso(), adopted_at: null,
   };
   try {
     if (DB) {
-      const result = await dbq(
-        `INSERT INTO app_potluck__claims (id, event_id, slot_id, member_id, member_name, note, claimed_at)
-         SELECT ?, ?, ?, ?, ?, ?, ?
-         WHERE (SELECT COUNT(*) FROM app_potluck__claims WHERE slot_id = ?) <
-               (SELECT capacity FROM app_potluck__slots WHERE id = ?)
-           AND NOT EXISTS (
-             SELECT 1 FROM app_potluck__claims WHERE slot_id = ? AND member_id = ?
-           )`,
-        [claim.id, claim.event_id, claim.slot_id, claim.member_id, claim.member_name, claim.note, claim.claimed_at, slot.id, slot.id, slot.id, currentMember.id]
+      await db(
+        `INSERT INTO app_board_minutes__meetings
+          (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at)
+         VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, NULL)`,
+        [meeting.id, meeting.title, meeting.meeting_date, meeting.location, meeting.attendees, meeting.notes, meeting.created_by, meeting.created_at, meeting.updated_at]
       );
-      if (result.meta?.changes === 0) throw new Error("Someone just claimed the last opening. Refreshing the list.");
     }
-    claims = [...claims, claim];
-    showNotice(`Claimed ${slot.name}.`);
-    return true;
-  } catch (e) {
-    await loadData().catch(() => {});
-    showError(e.message);
-    return false;
-  }
+    meetings = [meeting, ...meetings];
+    detailId = meeting.id;
+    tab = "drafts";
+    closeModal();
+    showNotice("Draft minutes created.");
+  } catch (e) { showError(e.message); }
 }
 
-async function releaseClaim(claimId) {
-  const claim = claims.find(c => c.id === claimId);
-  if (!claim) return false;
-  const allowed = claim.member_id === currentMember?.id || canCreate();
-  if (!allowed) { showError("You can only release your own claim."); return false; }
+async function saveMeetingNotes(meetingId, patch) {
+  const meeting = meetingById(meetingId);
+  if (!meeting || !canEdit(meeting)) return;
   try {
-    if (DB) await dbq("DELETE FROM app_potluck__claims WHERE id = ?", [claimId]);
-    claims = claims.filter(c => c.id !== claimId);
-    showNotice("Dish released.");
-    return true;
-  } catch (e) {
-    showError(e.message);
-    return false;
-  }
+    if (DB) {
+      await db(`UPDATE app_board_minutes__meetings SET title = ?, meeting_date = ?, location = ?, attendees = ?, notes = ?, updated_at = ? WHERE id = ?`,
+        [patch.title, patch.meeting_date, patch.location, patch.attendees, patch.notes, nowIso(), meetingId]);
+    }
+    meetings = meetings.map(m => m.id === meetingId ? { ...m, ...patch } : m);
+    closeModal();
+    showNotice("Minutes updated.");
+  } catch (e) { showError(e.message); }
 }
 
-async function swapTo(slotId) {
-  const eventId = selectedEventId;
-  const own = claims.find(c => c.event_id === eventId && c.member_id === currentMember?.id);
-  if (!own) return claimSlot(slotId);
-  if (own.slot_id === slotId) return;
-  const ok = await hubConfirm("Move your claim to this dish slot?");
-  if (!ok) return;
-  const oldClaimId = own.id;
-  const claimedNewSlot = await claimSlot(slotId);
-  if (claimedNewSlot) await releaseClaim(oldClaimId);
-}
-
-async function archiveEvent(eventId) {
-  if (!canCreate()) return showError("Only adults and leadership can archive potlucks.");
+async function adoptMeeting(meetingId) {
+  const meeting = meetingById(meetingId);
+  if (!meeting || !canEdit(meeting)) return;
   const ok = await hubConfirm({
-    message: "Archive this potluck?",
-    description: "It will be hidden from the active gathering list. Existing claims are preserved.",
-    confirmLabel: "Archive",
-    destructive: true,
+    message: "Adopt these minutes?",
+    description: "Once adopted, the minutes, motions, and votes become a permanent public record and can no longer be edited.",
+    confirmLabel: "Adopt minutes",
   });
   if (!ok) return;
+  const at = nowIso();
   try {
-    if (DB) await dbq("UPDATE app_potluck__events SET archived = 1 WHERE id = ?", [eventId]);
-    events = events.filter(e => e.id !== eventId);
-    selectedEventId = null;
-    showNotice("Potluck archived.");
-  } catch (e) {
-    showError(e.message);
-  }
+    if (DB) await db(`UPDATE app_board_minutes__meetings SET status = 'adopted', adopted_at = ?, updated_at = ? WHERE id = ?`, [at, at, meetingId]);
+    meetings = meetings.map(m => m.id === meetingId ? { ...m, status: "adopted", adopted_at: at } : m);
+    showNotice("Minutes adopted.");
+  } catch (e) { showError(e.message); }
 }
 
-function addDraftSlot() {
-  draftSlots.push({ name: "", capacity: 1 });
-  render();
+async function deleteMeeting(meetingId) {
+  const meeting = meetingById(meetingId);
+  if (!meeting || !canEdit(meeting)) return;
+  const ok = await hubConfirm({ message: "Delete this draft?", description: "Its motions and votes will be removed.", confirmLabel: "Delete", destructive: true });
+  if (!ok) return;
+  try {
+    if (DB) await db(`DELETE FROM app_board_minutes__meetings WHERE id = ?`, [meetingId]);
+    meetings = meetings.filter(m => m.id !== meetingId);
+    motions = motions.filter(m => m.meeting_id !== meetingId);
+    votes = votes.filter(v => v.meeting_id !== meetingId);
+    detailId = null;
+    showNotice("Draft deleted.");
+  } catch (e) { showError(e.message); }
 }
-function updateDraft(index, field, value) {
-  draftSlots[index][field] = field === "capacity" ? Math.max(1, Number(value) || 1) : value;
+
+// ── Motion actions (board only, draft meetings only) ─────────────────────────────
+
+async function addMotion(meetingId, text, movedBy) {
+  const meeting = meetingById(meetingId);
+  if (!meeting || !canEdit(meeting)) return;
+  const order = motionsFor(meetingId).length;
+  const motion = {
+    id: uid("motion"), meeting_id: meetingId, text, moved_by: movedBy || "", seconded_by: "",
+    outcome: "open", sort_order: order, recorded_by: ME.id, created_at: nowIso(), updated_at: nowIso(),
+  };
+  try {
+    if (DB) {
+      await db(
+        `INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at)
+         VALUES (?, ?, ?, ?, '', 'open', ?, ?, ?, ?)`,
+        [motion.id, motion.meeting_id, motion.text, motion.moved_by, motion.sort_order, motion.recorded_by, motion.created_at, motion.updated_at]
+      );
+    }
+    motions = [...motions, motion];
+    closeModal();
+    showNotice("Motion added.");
+  } catch (e) { showError(e.message); }
 }
-function removeDraft(index) {
-  draftSlots.splice(index, 1);
-  if (!draftSlots.length) addDraftSlot();
-  render();
+
+async function patchMotion(motionId, patch) {
+  const motion = motions.find(m => m.id === motionId);
+  if (!motion) return;
+  const meeting = meetingById(motion.meeting_id);
+  if (!meeting || !canEdit(meeting)) return;
+  try {
+    const cols = Object.keys(patch);
+    const set = cols.map(c => `${c} = ?`).join(", ");
+    if (DB) await db(`UPDATE app_board_minutes__motions SET ${set}, updated_at = ? WHERE id = ?`, [...cols.map(c => patch[c]), nowIso(), motionId]);
+    motions = motions.map(m => m.id === motionId ? { ...m, ...patch } : m);
+    render();
+  } catch (e) { showError(e.message); }
 }
+
+async function deleteMotion(motionId) {
+  const motion = motions.find(m => m.id === motionId);
+  if (!motion) return;
+  const meeting = meetingById(motion.meeting_id);
+  if (!meeting || !canEdit(meeting)) return;
+  const ok = await hubConfirm({ message: "Remove this motion?", confirmLabel: "Remove", destructive: true });
+  if (!ok) return;
+  try {
+    if (DB) await db(`DELETE FROM app_board_minutes__motions WHERE id = ?`, [motionId]);
+    motions = motions.filter(m => m.id !== motionId);
+    votes = votes.filter(v => v.motion_id !== motionId);
+    showNotice("Motion removed.");
+  } catch (e) { showError(e.message); }
+}
+
+// ── Voting (each board member records their OWN vote) ────────────────────────────
+
+async function castVote(motionId, value) {
+  const motion = motions.find(m => m.id === motionId);
+  if (!motion) return;
+  const meeting = meetingById(motion.meeting_id);
+  if (!meeting || isAdopted(meeting) || !isBoard()) return showError("Only board members can vote on open minutes.");
+  const existing = myVote(votes, motionId, ME.id);
+  try {
+    if (existing) {
+      if (existing.vote === value) return; // no change
+      if (DB) await db(`UPDATE app_board_minutes__votes SET vote = ?, updated_at = ? WHERE id = ?`, [value, nowIso(), existing.id]);
+      votes = votes.map(v => v.id === existing.id ? { ...v, vote: value } : v);
+    } else {
+      const vote = { id: uid("vote"), meeting_id: meeting.id, motion_id: motionId, voter_id: ME.id, vote: value, created_at: nowIso(), updated_at: nowIso() };
+      if (DB) {
+        await db(
+          `INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [vote.id, vote.meeting_id, vote.motion_id, vote.voter_id, vote.vote, vote.created_at, vote.updated_at]
+        );
+      }
+      votes = [...votes, vote];
+    }
+    render();
+  } catch (e) { showError(e.message); }
+}
+
+// ── Modals ──────────────────────────────────────────────────────────────────────
+
+function openModal(html) {
+  closeModal();
+  modalEl = document.createElement("div");
+  modalEl.className = "modal-backdrop";
+  modalEl.innerHTML = `<div class="modal">${html}</div>`;
+  modalEl.addEventListener("click", (e) => { if (e.target === modalEl) closeModal(); });
+  document.body.appendChild(modalEl);
+  const first = modalEl.querySelector("[data-autofocus]");
+  if (first) first.focus();
+}
+function closeModal() { modalEl?.remove(); modalEl = null; }
+window.closeModal = closeModal;
+
+function meetingFormFields(m) {
+  return `
+    <div class="field">
+      <label for="mt-title">Meeting title</label>
+      <input id="mt-title" name="title" maxlength="160" value="${esc(m?.title ?? "")}" placeholder="e.g. April Regular Meeting" required data-autofocus />
+    </div>
+    <div class="field">
+      <label for="mt-date">Date</label>
+      <input id="mt-date" name="meeting_date" type="date" value="${esc(m?.meeting_date ?? today())}" required />
+    </div>
+    <div class="field">
+      <label for="mt-loc">Location <span style="text-transform:none;font-weight:600">(optional)</span></label>
+      <input id="mt-loc" name="location" maxlength="160" value="${esc(m?.location ?? "")}" placeholder="Clubhouse, Zoom…" />
+    </div>
+    <div class="field">
+      <label for="mt-att">Attendees <span style="text-transform:none;font-weight:600">(optional)</span></label>
+      <input id="mt-att" name="attendees" maxlength="400" value="${esc(m?.attendees ?? "")}" placeholder="Names present" />
+    </div>
+    <div class="field">
+      <label for="mt-notes">Notes <span style="text-transform:none;font-weight:600">(optional)</span></label>
+      <textarea id="mt-notes" name="notes" maxlength="4000" placeholder="Discussion, reports, announcements…">${esc(m?.notes ?? "")}</textarea>
+    </div>`;
+}
+
+window.openMeetingModal = function (meetingId) {
+  const m = meetingId ? meetingById(meetingId) : null;
+  openModal(`
+    <h3>${m ? "Edit minutes" : "New minutes"}</h3>
+    <form id="meeting-form" ${m ? `data-edit="${esc(m.id)}"` : ""}>
+      ${meetingFormFields(m)}
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">${m ? "Save" : "Create draft"}</button>
+      </div>
+    </form>`);
+};
+
+window.openMotionModal = function (meetingId) {
+  const opts = members.map(mem => `<option value="${esc(mem.id)}">${esc(mem.name)}</option>`).join("");
+  openModal(`
+    <h3>Add motion</h3>
+    <form id="motion-form" data-meeting="${esc(meetingId)}">
+      <div class="field">
+        <label for="mo-text">Motion</label>
+        <textarea id="mo-text" name="text" maxlength="1000" placeholder="Moved that…" required data-autofocus></textarea>
+      </div>
+      <div class="field">
+        <label for="mo-moved">Moved by <span style="text-transform:none;font-weight:600">(optional)</span></label>
+        <select id="mo-moved" name="moved_by"><option value="">—</option>${opts}</select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add motion</button>
+      </div>
+    </form>`);
+};
+
+window.openSettingsModal = function () {
+  const opts = groups.map(g => `<option value="${esc(g.id)}" ${settings.board_group_id === g.id ? "selected" : ""}>${esc(g.name)}</option>`).join("");
+  const controls = IS_ADMIN ? `
+    <div class="field">
+      <label for="s-group">Board group</label>
+      <select id="s-group">
+        <option value="" ${!settings.board_group_id ? "selected" : ""}>— No board configured —</option>
+        ${opts}
+      </select>
+      <span class="muted tiny">${!boardConfigured() ? "⚠️ Pick a board group to enable creating minutes, motions, and votes — those actions are disabled until one is set." : "Members of this group record minutes and vote on motions."}</span>
+    </div>` : `
+    <p class="muted">Board group: <strong>${settings.board_group_id ? esc(groups.find(g => g.id === settings.board_group_id)?.name ?? settings.board_group_id) : "— none —"}</strong></p>
+    <p class="tiny muted" style="margin-top:8px">Only a hub admin can change this.</p>`;
+  openModal(`
+    <h3>⚙️ Board Minutes settings</h3>
+    ${controls}
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+      ${IS_ADMIN ? `<button class="btn btn-primary" onclick="saveSettings()">Save</button>` : ""}
+    </div>`);
+};
+
+window.saveSettings = async function () {
+  const groupId = document.getElementById("s-group").value || null;
+  const btn = modalEl?.querySelector(".modal-actions .btn-primary");
+  if (btn) { btn.disabled = true; btn.textContent = "Saving…"; }
+  try {
+    await saveSetting("board_group_id", groupId ?? "");
+    settings.board_group_id = groupId;
+    closeModal();
+    render();
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = "Save"; }
+    showError(e.message);
+  }
+};
+
+// ── Render ──────────────────────────────────────────────────────────────────────
 
 function renderMessages() {
   return `${error ? `<div class="error">${esc(error)}</div>` : ""}${notice ? `<div class="notice">${esc(notice)}</div>` : ""}`;
 }
 
-function renderEventCard(event) {
-  const totals = eventTotals(event.id);
-  const statusClass = totals.capacity && totals.claimed >= totals.capacity ? "good" : totals.claimed ? "info" : "warn";
-  return `
-    <article class="card event-card" data-open-event="${esc(event.id)}">
-      <div class="event-head">
-        <div>
-          <div class="event-title">${esc(event.title)}</div>
-          <div class="event-meta">${esc(fmtDate(event.date))}${event.location ? ` · ${esc(event.location)}` : ""}</div>
-        </div>
-        <span class="pill ${statusClass}">${totals.claimed}/${totals.capacity} claimed</span>
-      </div>
-      ${event.notes ? `<p class="event-meta">${esc(event.notes)}</p>` : ""}
-      <div class="progress" aria-hidden="true"><span style="width:${totals.pct}%"></span></div>
-    </article>
-  `;
+function fmtDate(iso) {
+  if (!iso) return "";
+  try { return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", year: "numeric" }).format(new Date(`${iso}T12:00:00`)); }
+  catch { return iso; }
 }
 
-function renderList() {
-  const visible = [...events].sort((a, b) => a.date.localeCompare(b.date));
+function statusPill(meeting) {
+  return meeting.status === "adopted"
+    ? `<span class="pill good">Adopted</span>`
+    : `<span class="pill warn">Draft</span>`;
+}
+
+function renderMeetingCard(meeting) {
+  const mo = motionsFor(meeting.id);
   return `
-    <div class="topbar">
-      <div>
-        <h1>Potluck</h1>
-        <p class="muted tiny">Claim dishes without double-booking dessert.</p>
+    <article class="card clickable" data-open="${esc(meeting.id)}">
+      <div class="head">
+        <div>
+          <div class="title">${esc(meeting.title)}</div>
+          <div class="meta">${esc(fmtDate(meeting.meeting_date))}${meeting.location ? ` · ${esc(meeting.location)}` : ""} · ${mo.length} motion${mo.length === 1 ? "" : "s"}</div>
+        </div>
+        ${statusPill(meeting)}
       </div>
-      ${canCreate() ? `<button class="btn" data-view-create>Create</button>` : ""}
-    </div>
-    ${renderMessages()}
-    <div class="section-head">
-      <h2>Gatherings</h2>
-      <button class="btn btn-ghost btn-sm" type="button" data-refresh>Refresh</button>
-    </div>
-    <section class="stack">
-      ${visible.length ? visible.map(renderEventCard).join("") : `<div class="card empty">No potlucks yet.</div>`}
-    </section>
-  `;
+    </article>`;
+}
+
+function renderVoteChip(vote) {
+  const m = memberMap.get(vote.voter_id);
+  const color = vote.vote === "yea" ? "var(--green)" : vote.vote === "nay" ? "var(--red)" : "var(--amber)";
+  return `
+    <span class="vote-chip" title="${esc(m?.name ?? "Member")}: ${esc(vote.vote)}">
+      <span class="avatar" style="background:${esc(memberColor(vote.voter_id))}">${esc(initial(m?.name ?? "?"))}</span>
+      ${esc(m?.name ?? "Member")} · <strong style="color:${color}">${esc(vote.vote)}</strong>
+    </span>`;
+}
+
+function renderMotion(motion, editable) {
+  const t = tally(votes, motion.id);
+  const mine = myVote(votes, motion.id, ME?.id);
+  const moved = motion.moved_by ? (memberMap.get(motion.moved_by)?.name ?? "") : "";
+  const seconded = motion.seconded_by ? (memberMap.get(motion.seconded_by)?.name ?? "") : "";
+  const cast = votesForMotion(votes, motion.id);
+
+  const voteButtons = (editable && isBoard()) ? `
+    <div class="row" style="margin-top:8px">
+      ${VOTE_VALUES.map(v => `<button class="btn btn-sm btn-vote ${mine?.vote === v ? `on-${v}` : ""}" data-vote="${esc(motion.id)}" data-val="${esc(v)}">${esc(v[0].toUpperCase() + v.slice(1))}</button>`).join("")}
+    </div>` : "";
+
+  const secondControl = (editable && isBoard() && !motion.seconded_by) ? `
+    <button class="btn btn-ghost btn-sm" data-second="${esc(motion.id)}">Record my second</button>` : "";
+
+  const outcomeControl = editable ? `
+    <div class="row" style="margin-top:8px">
+      <label style="text-transform:none;letter-spacing:0">Outcome</label>
+      <select data-outcome="${esc(motion.id)}" style="width:auto">
+        ${MOTION_OUTCOMES.map(o => `<option value="${esc(o.value)}" ${motion.outcome === o.value ? "selected" : ""}>${esc(o.label)}</option>`).join("")}
+      </select>
+      <button class="btn btn-danger btn-sm" data-del-motion="${esc(motion.id)}">Remove</button>
+    </div>` : "";
+
+  const outcomePill = motion.outcome === "carried" ? `<span class="pill good">Carried</span>`
+    : motion.outcome === "failed" ? `<span class="pill bad">Failed</span>`
+    : motion.outcome === "open" ? `<span class="pill info">Open</span>`
+    : `<span class="pill">${esc(outcomeLabel(motion.outcome))}</span>`;
+
+  return `
+    <div class="motion">
+      <div class="head">
+        <div class="motion-text">${esc(motion.text)}</div>
+        ${outcomePill}
+      </div>
+      <div class="meta">
+        ${moved ? `Moved by ${esc(moved)}` : "Mover not recorded"}${seconded ? ` · Seconded by ${esc(seconded)}` : " · No second"}
+        · Tally: <strong>${t.yea}</strong> yea / <strong>${t.nay}</strong> nay / ${t.abstain} abstain
+        ${editable && (t.yea || t.nay) ? ` · suggests <em>${esc(suggestedOutcome(t))}</em>` : ""}
+      </div>
+      ${cast.length ? `<div class="tally">${cast.map(renderVoteChip).join("")}</div>` : ""}
+      ${voteButtons}
+      ${secondControl}
+      ${outcomeControl}
+    </div>`;
 }
 
 function renderDetail() {
-  const event = selectedEvent();
-  if (!event) return renderList();
-  const totals = eventTotals(event.id);
-  const ownClaims = claims.filter(c => c.event_id === event.id && c.member_id === currentMember?.id);
-  return `
-    <button class="btn btn-ghost btn-sm back" data-back>Back</button>
+  const meeting = meetingById(detailId);
+  if (!meeting) return renderList();
+  const editable = canEdit(meeting);
+  const mo = motionsFor(meeting.id);
+  const adopted = isAdopted(meeting);
+
+  const boardTools = editable ? `
+    <div class="actions">
+      <button class="btn btn-ghost btn-sm" data-edit-meeting>Edit details</button>
+      <button class="btn btn-ghost btn-sm" data-add-motion>Add motion</button>
+      <button class="btn btn-sm" data-adopt="${esc(meeting.id)}">Adopt minutes</button>
+      <button class="btn btn-danger btn-sm" data-del-meeting="${esc(meeting.id)}">Delete draft</button>
+    </div>` : "";
+
+  const root = document.getElementById("root");
+  root.className = "app";
+  root.innerHTML = `
+    <button class="btn btn-ghost btn-sm back" data-back>← All minutes</button>
     ${renderMessages()}
     <section class="card stack">
-      <div class="event-head">
+      <div class="head">
         <div>
-          <h1>${esc(event.title)}</h1>
-          <p class="muted">${esc(fmtDate(event.date))}${event.location ? ` · ${esc(event.location)}` : ""}</p>
+          <h1>${esc(meeting.title)}</h1>
+          <p class="meta">${esc(fmtDate(meeting.meeting_date))}${meeting.location ? ` · ${esc(meeting.location)}` : ""}${adopted && meeting.adopted_at ? ` · adopted ${esc(fmtDate(meeting.adopted_at.slice(0,10)))}` : ""}</p>
         </div>
-        <div class="event-tools">
-          <span class="pill ${totals.claimed >= totals.capacity ? "good" : "info"}">${totals.claimed}/${totals.capacity} spots</span>
-          ${canCreate() ? `<button class="btn btn-quiet-danger" data-archive="${esc(event.id)}">Archive</button>` : ""}
-        </div>
+        ${statusPill(meeting)}
       </div>
-      ${event.notes ? `<p>${esc(event.notes)}</p>` : ""}
-      ${ownClaims.length ? `<p class="muted tiny">You are bringing ${ownClaims.map(c => esc(slots.find(s => s.id === c.slot_id)?.name ?? "a dish")).join(", ")}.</p>` : ""}
+      ${meeting.attendees ? `<p class="tiny muted"><strong>Present:</strong> ${esc(meeting.attendees)}</p>` : ""}
+      ${meeting.notes ? `<p>${esc(meeting.notes)}</p>` : ""}
+      ${adopted ? `<p class="tiny muted">These minutes are adopted and locked as the official record.</p>` : `<p class="tiny muted">Draft — visible to the board until adopted.</p>`}
+      ${boardTools}
     </section>
     <section class="card">
-      <h2>Dish slots</h2>
-      ${eventSlots(event.id).map(renderSlot).join("") || `<div class="empty">No dish slots yet.</div>`}
-    </section>
-  `;
+      <h2>Motions</h2>
+      ${mo.length ? mo.map(m => renderMotion(m, editable)).join("") : `<div class="empty">No motions recorded${editable ? " yet — add one above." : "."}</div>`}
+    </section>`;
 }
 
-function renderSlot(slot) {
-  const sc = slotClaims(slot.id);
-  const mine = myClaim(slot.id);
-  const full = sc.length >= Number(slot.capacity);
-  const hasAnyMine = claims.some(c => c.event_id === slot.event_id && c.member_id === currentMember?.id);
-  const claimButton = mine
-    ? `<button class="btn btn-danger btn-sm" data-release="${esc(mine.id)}">Release</button>`
-    : `<button class="btn btn-sm" data-claim="${esc(slot.id)}" ${full ? "disabled" : ""}>${hasAnyMine ? "Swap here" : "Claim"}</button>`;
-  return `
-    <div class="slot">
-      <div class="slot-top">
-        <div>
-          <div class="slot-name">${esc(slot.name)}</div>
-        </div>
-        <span class="pill ${full ? "good" : "warn"}">${sc.length}/${slot.capacity}</span>
+function renderList() {
+  const root = document.getElementById("root");
+  root.className = "app";
+  const adopted = meetings.filter(m => m.status === "adopted");
+  const drafts = meetings.filter(m => m.status !== "adopted");
+  const showDrafts = isBoard();
+  const activeTab = (tab === "drafts" && showDrafts) ? "drafts" : "adopted";
+  const list = activeTab === "drafts" ? drafts : adopted;
+
+  const boardNotConfigured = !boardConfigured()
+    ? `<div class="notice">No board group is configured, so minutes can't be created. ${IS_ADMIN ? `Use <strong>Settings</strong> to pick one.` : `Ask a hub admin to set one in Settings.`}</div>`
+    : "";
+
+  root.innerHTML = `
+    <div class="topbar">
+      <div>
+        <h1>🏛️ Board Minutes</h1>
+        <p class="muted tiny">Official meeting minutes with motions and recorded votes.</p>
       </div>
-      <div class="claims">
-        ${sc.length ? sc.map(renderClaim).join("") : `<span class="muted tiny">Open spot</span>`}
+      <div class="row" style="justify-content:flex-end">
+        ${isBoard() ? `<button class="btn" onclick="openMeetingModal()">New minutes</button>` : ""}
+        <button class="btn btn-ghost btn-sm" onclick="openSettingsModal()">Settings</button>
       </div>
-      <div class="actions">${mine ? claimButton : claimButton.replace("data-claim", hasAnyMine ? "data-swap" : "data-claim")}</div>
     </div>
-  `;
-}
-
-function renderClaim(claim) {
-  const member = memberById(claim.member_id);
-  const color = memberColor(member?.id ?? claim.member_id);
-  return `
-    <span class="claim-chip">
-      <span class="avatar" style="background:${esc(color)}">${esc(initial(claim.member_name))}</span>
-      ${esc(claim.member_name)}
-    </span>
-  `;
-}
-
-function renderCreate() {
-  return `
-    <button class="btn btn-ghost btn-sm back" data-view-list>Back</button>
-    <div class="topbar"><h1>Create Potluck</h1></div>
     ${renderMessages()}
-    <form class="card form" id="create-form">
-      <div class="grid two">
-        <div class="field">
-          <label for="title">Gathering</label>
-          <input id="title" name="title" value="Holiday Dinner" required />
-        </div>
-        <div class="field">
-          <label for="date">Date</label>
-          <input id="date" name="date" type="date" value="${today()}" required />
-        </div>
-      </div>
-      <div class="field">
-        <label for="location">Location</label>
-        <input id="location" name="location" placeholder="Home, clubhouse, chapter hall" />
-      </div>
-      <div class="field">
-        <label for="notes">Notes</label>
-        <textarea id="notes" name="notes" placeholder="Theme, headcount, arrival window"></textarea>
-      </div>
-      <div class="field">
-        <label>Dish slots</label>
-        <div class="slot-builder">
-          ${draftSlots.map((s, i) => `
-            <div class="slot-row">
-              <input data-draft="${i}" data-field="name" value="${esc(s.name)}" placeholder="Dish category" />
-              <input data-draft="${i}" data-field="capacity" type="number" min="1" value="${esc(String(s.capacity))}" aria-label="Capacity" />
-              <button class="btn btn-ghost btn-sm" type="button" data-remove-draft="${i}">Remove</button>
-            </div>
-          `).join("")}
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn btn-ghost" type="button" data-add-slot>Add slot</button>
-        <button class="btn" type="submit">Create potluck</button>
-      </div>
-    </form>
-  `;
+    ${boardNotConfigured}
+    ${showDrafts ? `
+    <div class="tabs">
+      <button class="tab ${activeTab === "adopted" ? "active" : ""}" data-tab="adopted">Adopted (${adopted.length})</button>
+      <button class="tab ${activeTab === "drafts" ? "active" : ""}" data-tab="drafts">Drafts (${drafts.length})</button>
+    </div>` : ""}
+    <div class="section-head">
+      <h2>${activeTab === "drafts" ? "Draft minutes" : "Adopted minutes"}</h2>
+      <button class="btn btn-ghost btn-sm" data-refresh>Refresh</button>
+    </div>
+    <section class="stack">
+      ${list.length ? list.map(renderMeetingCard).join("") : `<div class="card empty">No ${activeTab} minutes yet.</div>`}
+    </section>`;
 }
 
 function render() {
-  const root = document.getElementById("root");
-  root.className = "app";
-  root.innerHTML = selectedEventId ? renderDetail() : view === "create" ? renderCreate() : renderList();
+  if (detailId) renderDetail();
+  else renderList();
 }
 
-document.addEventListener("click", (event) => {
-  const target = event.target.closest("button, [data-open-event]");
-  if (!target) return;
-  const openId = target.getAttribute("data-open-event");
-  if (openId) { selectedEventId = openId; clearMessages(); render(); return; }
-  if (target.matches("[data-back], [data-view-list]")) { selectedEventId = null; view = "upcoming"; clearMessages(); render(); return; }
-  if (target.matches("[data-view-create]")) { view = "create"; clearMessages(); render(); return; }
-  if (target.matches("[data-refresh]")) { refresh(); return; }
-  if (target.matches("[data-add-slot]")) { addDraftSlot(); return; }
-  if (target.hasAttribute("data-remove-draft")) { removeDraft(Number(target.getAttribute("data-remove-draft"))); return; }
-  if (target.hasAttribute("data-claim")) { claimSlot(target.getAttribute("data-claim")); return; }
-  if (target.hasAttribute("data-swap")) { swapTo(target.getAttribute("data-swap")); return; }
-  if (target.hasAttribute("data-release")) { releaseClaim(target.getAttribute("data-release")); return; }
-  if (target.hasAttribute("data-archive")) { archiveEvent(target.getAttribute("data-archive")); return; }
+// ── Events ───────────────────────────────────────────────────────────────────────
+
+document.addEventListener("click", (e) => {
+  const openCard = e.target.closest("[data-open]");
+  if (openCard && !e.target.closest("button")) { detailId = openCard.getAttribute("data-open"); clearMessages(); render(); return; }
+  const t = e.target.closest("button");
+  if (!t) return;
+  if (t.matches("[data-back]")) { detailId = null; clearMessages(); render(); return; }
+  if (t.matches("[data-refresh]")) return refresh();
+  if (t.hasAttribute("data-tab")) { tab = t.getAttribute("data-tab"); clearMessages(); render(); return; }
+  if (t.hasAttribute("data-edit-meeting")) return window.openMeetingModal(detailId);
+  if (t.hasAttribute("data-add-motion")) return window.openMotionModal(detailId);
+  if (t.hasAttribute("data-adopt")) return adoptMeeting(t.getAttribute("data-adopt"));
+  if (t.hasAttribute("data-del-meeting")) return deleteMeeting(t.getAttribute("data-del-meeting"));
+  if (t.hasAttribute("data-del-motion")) return deleteMotion(t.getAttribute("data-del-motion"));
+  if (t.hasAttribute("data-vote")) return castVote(t.getAttribute("data-vote"), t.getAttribute("data-val"));
+  if (t.hasAttribute("data-second")) return patchMotion(t.getAttribute("data-second"), { seconded_by: ME.id });
 });
 
-document.addEventListener("input", (event) => {
-  const input = event.target.closest("[data-draft]");
-  if (!input) return;
-  updateDraft(Number(input.getAttribute("data-draft")), input.getAttribute("data-field"), input.value);
+document.addEventListener("change", (e) => {
+  const sel = e.target.closest("[data-outcome]");
+  if (sel) patchMotion(sel.getAttribute("data-outcome"), { outcome: sel.value });
 });
 
-document.addEventListener("submit", (event) => {
-  if (event.target.id !== "create-form") return;
-  event.preventDefault();
-  createEvent(event.target);
+document.addEventListener("submit", (e) => {
+  const form = e.target;
+  if (form.id === "meeting-form") {
+    e.preventDefault();
+    const btn = form.querySelector(".btn-primary");
+    if (btn) { btn.disabled = true; btn.textContent = "Saving…"; }
+    const editId = form.getAttribute("data-edit");
+    const patch = {
+      title: form.title.value.trim(), meeting_date: form.meeting_date.value,
+      location: form.location.value.trim(), attendees: form.attendees.value.trim(), notes: form.notes.value.trim(),
+    };
+    const p = editId ? saveMeetingNotes(editId, patch) : submitMeetingForm(form);
+    Promise.resolve(p).catch((err) => { if (btn) { btn.disabled = false; btn.textContent = "Save"; } showError(err.message); });
+    return;
+  }
+  if (form.id === "motion-form") {
+    e.preventDefault();
+    const btn = form.querySelector(".btn-primary");
+    const text = form.text.value.trim();
+    if (!text) { form.text.focus(); return; }
+    if (btn) { btn.disabled = true; btn.textContent = "Adding…"; }
+    addMotion(form.getAttribute("data-meeting"), text, form.moved_by.value)
+      .catch((err) => { if (btn) { btn.disabled = false; btn.textContent = "Add motion"; } showError(err.message); });
+    return;
+  }
 });
 
 refresh();
