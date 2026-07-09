@@ -1,0 +1,32 @@
+{
+  "scenarios": [
+    {
+      "name": "draft minutes are hidden from plain members; only the board group can write",
+      "members": { "member": "adult" },
+      "steps": [
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, status, created_by, created_at, updated_at) VALUES (?, ?, ?, 'draft', ?, ?, ?)",
+          "params": ["m-draft", "March draft", "2026-03-01", "seed", "2026-03-02T00:00:00Z", "2026-03-02T00:00:00Z"]
+        },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, 'adopted', ?, ?, ?, ?)",
+          "params": ["m-adopted", "February minutes", "2026-02-01", "seed", "2026-02-02T00:00:00Z", "2026-02-02T00:00:00Z", "2026-03-01T00:00:00Z"]
+        },
+        {
+          "action": "db",
+          "as": "member",
+          "sql": "SELECT id FROM app_board_minutes__meetings",
+          "expect": { "status": 200, "rowCount": 1, "rowsContain": [{ "id": "m-adopted" }] }
+        },
+        {
+          "action": "db",
+          "as": "member",
+          "sql": "UPDATE app_board_minutes__meetings SET notes = 'tampered'",
+          "expect": { "status": 403 }
+        }
+      ]
+    }
+  ]
+}
