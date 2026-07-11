@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS app_board_minutes__motions (
 CREATE INDEX IF NOT EXISTS app_board_minutes__motions_meeting_idx
   ON app_board_minutes__motions (meeting_id, sort_order);
 
--- Recorded roll-call votes: one per board member per motion (unique_per_member).
+-- Recorded roll-call votes: one per board member per motion (max_per_member).
 -- Each board member records their OWN vote (writer_column voter_id is forced to
 -- the caller). Votes inherit the meeting's visibility and freeze on adoption.
 -- `vote` is plaintext so the tally can be computed in SQL.

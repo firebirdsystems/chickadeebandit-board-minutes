@@ -50,9 +50,10 @@
       "parent_table": "meetings",
       "writer_column": "voter_id",
       "insert_privileged_only": true,
-      "unique_per_member": {
+      "max_per_member": {
         "member_column": "voter_id",
-        "scope_columns": ["motion_id"]
+        "scope_columns": ["motion_id"],
+        "limit": 1
       },
       "frozen_when": {
         "status_column": "status",

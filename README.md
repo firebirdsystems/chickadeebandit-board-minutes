@@ -22,7 +22,7 @@ structured, searchable, and tamper-evident.
 |-------|--------|--------|
 | `meetings` | `owner_or_visibility` + `write_privileged_only` + `frozen_when(adopted)` | Only the board writes; drafts board-only, adopted visible to everyone; immutable once adopted |
 | `motions` | `inherit_visibility` + `insert_privileged_only` + `frozen_when(adopted)` | Follow the meeting's visibility; only the board creates them; frozen when the meeting is adopted |
-| `votes` | `inherit_visibility` + `insert_privileged_only` + `unique_per_member(motion)` + `frozen_when(adopted)` | Each board member records only their own vote, one per motion; frozen on adoption |
+| `votes` | `inherit_visibility` + `insert_privileged_only` + `max_per_member(motion)` + `frozen_when(adopted)` | Each board member records only their own vote, one per motion; frozen on adoption |
 | `settings` | `app_config` | Board group pointer, written only by the admin `/api/admin-config` endpoint |
 
 The `write_privileged_only` / `insert_privileged_only` policies require a configured
