@@ -1,5 +1,6 @@
 {
   "id": "board-minutes",
+  "contexts": ["household", "shared_space"],
   "name": "Board Minutes",
   "version": "1.0.0",
   "description": "Keep official board meeting minutes with structured motions, seconds, and recorded per-member votes. Drafts stay editable; once minutes are adopted they become an immutable public record.",
