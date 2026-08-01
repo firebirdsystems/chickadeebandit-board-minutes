@@ -69,6 +69,20 @@
     "settings_table": "settings",
     "keys": ["board_group_id"]
   },
+  "member_references": {
+    "meetings": { "column": "created_by", "on_removed": "keep" },
+    "motions": [
+      { "column": "moved_by", "on_removed": "keep" },
+      { "column": "seconded_by", "on_removed": "keep" },
+      { "column": "recorded_by", "on_removed": "keep" }
+    ],
+    "votes": { "column": "voter_id", "on_removed": "keep" }
+  },
+  "delete_cascades": {
+    "meetings": [
+      { "table": "votes", "foreign_key": "meeting_id" }
+    ]
+  },
   "nav": { "label": "Board Minutes" },
   "resource_limits": {
     "max_db_bytes": 104857600
