@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   outcomeLabel, isBoard, isAdopted, canEditMeeting,
-  tally, myVote, votesForMotion, suggestedOutcome,
+  tally, myVote, votesForMotion, suggestedOutcome, searchableFields,
 } from "../src/logic.js";
 import { testPrivilegedGateContract } from "./helpers/privileged-gate.mjs";
 
@@ -64,4 +64,16 @@ testPrivilegedGateContract("isBoard", isBoard, {
   outsider: { id: "m-other", role: "adult" },
   groups:   GROUPS,
   groupId:  "g-board",
+});
+
+describe("searchableFields", () => {
+  it("matches on attendees and note body, not just the meeting title", () => {
+    const fields = searchableFields({
+      title: "March board meeting", meeting_date: "2026-03-04", location: "Clubhouse",
+      attendees: "Ada, Bo, Cy", notes: "approved the roof tender",
+    });
+    expect(fields).toContain("Ada, Bo, Cy");
+    expect(fields).toContain("approved the roof tender");
+    expect(fields).toContain("Clubhouse");
+  });
 });

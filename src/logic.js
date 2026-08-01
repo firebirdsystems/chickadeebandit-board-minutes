@@ -61,3 +61,13 @@ export function suggestedOutcome(t) {
   if (t.yea === 0 && t.nay === 0) return "open";
   return t.yea > t.nay ? "carried" : t.yea < t.nay ? "failed" : "open";
 }
+
+/**
+ * Fields the in-app search matches against (see hub-sdk `searchMatch`).
+ * Location, attendees and the body of the notes all count — minutes
+ * are looked up by "who was there" and "what was discussed" far more
+ * often than by whatever the meeting was titled.
+ */
+export function searchableFields(item) {
+  return [item.title, item.meeting_date, item.location, item.attendees, item.notes];
+}
