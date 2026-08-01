@@ -81,6 +81,9 @@
   "delete_cascades": {
     "meetings": [
       { "table": "votes", "foreign_key": "meeting_id" }
+    ],
+    "motions": [
+      { "table": "votes", "foreign_key": "motion_id" }
     ]
   },
   "nav": { "label": "Board Minutes" },

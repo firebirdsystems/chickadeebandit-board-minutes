@@ -370,6 +370,11 @@ async function deleteMotion(motionId) {
   const ok = await hubConfirm({ message: "Remove this motion?", confirmLabel: "Remove", destructive: true });
   if (!ok) return;
   try {
+    // `votes` carries a FK to the MEETING, not the motion, so nothing in the
+    // schema removed a deleted motion's roll-call rows — they survived with a
+    // motion_id pointing at nothing and still counted in the meeting-level
+    // tally. The manifest now declares motions → votes(motion_id) in
+    // delete_cascades, so the hub deletes them inside this statement's batch.
     if (DB) await db(`DELETE FROM app_board_minutes__motions WHERE id = ?`, [motionId]);
     motions = motions.filter(m => m.id !== motionId);
     votes = votes.filter(v => v.motion_id !== motionId);
