@@ -87,6 +87,14 @@
     ]
   },
   "nav": { "label": "Board Minutes" },
+  "agenda": {
+    "kind": "event",
+    "label": "Board Meeting",
+    "source": {
+      "kind": "sql",
+      "query": "SELECT id AS id, COALESCE(NULLIF(title, ''), 'Board meeting') AS title, NULLIF(location, '') AS subtitle, meeting_date AS when_at FROM app_board_minutes__meetings WHERE substr(meeting_date, 1, 10) = :today LIMIT 10"
+    }
+  },
   "resource_limits": {
     "max_db_bytes": 104857600
   },
