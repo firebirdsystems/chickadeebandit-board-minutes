@@ -87,6 +87,24 @@
     ]
   },
   "nav": { "label": "Board Minutes" },
+  "glance": {
+    "source": {
+      "kind": "sql",
+      "query": "SELECT COUNT(*) AS n FROM app_board_minutes__meetings WHERE substr(meeting_date, 1, 10) >= :today LIMIT 1"
+    },
+    "display": {
+      "template": "badge",
+      "count": "n",
+      "label": "board meetings scheduled",
+      "severity": "info"
+    }
+  },
+  "publishes": [
+    "board.minutes_adopted"
+  ],
+  "publish_acls": {
+    "board.minutes_adopted": { "require_role": "adult" }
+  },
   "agenda": {
     "kind": "event",
     "label": "Board Meeting",

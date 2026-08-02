@@ -132,6 +132,7 @@ const DB               = window.__DB_URL           ?? "";
 const ADMIN_CONFIG_URL = window.__ADMIN_CONFIG_URL ?? "";
 const ME       = window.__CURRENT_MEMBER ?? null;
 const IS_ADMIN = !!window.__IS_ADMIN;
+const EVENTS   = window.__EVENTS_URL ?? "";
 
 let members = [];
 let memberMap = new Map();
@@ -300,6 +301,20 @@ async function saveMeetingNotes(meetingId, patch) {
   } catch (e) { showError(e.message); }
 }
 
+// Best-effort: the row is already written, so a failed publish is not fatal.
+async function publishEvent(type, subjectId, payload = {}) {
+  if (!EVENTS) return;
+  try {
+    await fetch(EVENTS, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type, subject_id: subjectId, payload }),
+    });
+  } catch {
+    // ignored on purpose
+  }
+}
+
 async function adoptMeeting(meetingId) {
   const meeting = meetingById(meetingId);
   if (!meeting || !canEdit(meeting)) return;
@@ -313,6 +328,14 @@ async function adoptMeeting(meetingId) {
   try {
     if (DB) await db(`UPDATE app_board_minutes__meetings SET status = 'adopted', adopted_at = ?, updated_at = ? WHERE id = ?`, [at, at, meetingId]);
     meetings = meetings.map(m => m.id === meetingId ? { ...m, status: "adopted", adopted_at: at } : m);
+    // Adoption is the one transition worth publishing: a draft is board-only,
+    // and adoption is exactly the moment the minutes become readable by
+    // everyone - the same audience the event bus reaches.
+    await publishEvent("board.minutes_adopted", meetingId, {
+      title: meeting.title ?? "",
+      meeting_date: meeting.meeting_date,
+      adopted_at: at,
+    });
     showNotice("Minutes adopted.");
   } catch (e) { showError(e.message); }
 }
