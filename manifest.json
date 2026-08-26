@@ -17,6 +17,12 @@
     "requires_approval": false
   },
   "storage": "db",
+  "preload": {
+    "settings": {"sql": "SELECT key, value FROM app_board_minutes__settings WHERE key = 'board_group_id'"},
+    "meetings": {"sql": "SELECT * FROM app_board_minutes__meetings ORDER BY meeting_date DESC LIMIT 300"},
+    "motions": {"sql": "SELECT * FROM app_board_minutes__motions ORDER BY sort_order ASC LIMIT 1000"},
+    "votes": {"sql": "SELECT * FROM app_board_minutes__votes LIMIT 3000"}
+  },
   "db_plaintext_columns": ["outcome", "vote"],
   "row_policies": {
     "meetings": {
