@@ -120,7 +120,7 @@
 </div>
 
 <script type="module">
-import { esc, memberColor, initial, hubConfirm, searchMatch } from "/hub-sdk.js";
+import { esc, memberColor, initial, hubConfirm, searchMatch, hubToday as today } from "/hub-sdk.js";
 import {
   VOTE_VALUES, MOTION_OUTCOMES, outcomeLabel,
   isBoard as _isBoard, isAdopted, canEditMeeting as _canEdit,
@@ -150,7 +150,6 @@ let modalEl = null;
 
 const nowIso = () => new Date().toISOString();
 const uid = (p) => `${p}-${crypto.randomUUID()}`;
-const today = () => new Date().toISOString().slice(0, 10);
 
 function isBoard() { return _isBoard(ME, groups, settings.board_group_id); }
 function boardConfigured() { return !!settings.board_group_id && !!groups.find(g => g.id === settings.board_group_id); }
@@ -571,7 +570,7 @@ function statusPill(meeting) {
 function renderMeetingCard(meeting) {
   const mo = motionsFor(meeting.id);
   return `
-    <article class="card clickable" data-open="${esc(meeting.id)}">
+    <article class="card clickable" data-testid="meeting-card" data-meeting-id="${esc(meeting.id)}" data-meeting-status="${esc(meeting.status)}" data-open="${esc(meeting.id)}">
       <div class="head">
         <div>
           <div class="title">${esc(meeting.title)}</div>
@@ -707,7 +706,7 @@ function renderList() {
         <p class="muted tiny">Official meeting minutes with motions and recorded votes.</p>
       </div>
       <div class="row" style="justify-content:flex-end">
-        ${isBoard() ? `<button class="btn" onclick="openMeetingModal()">New minutes</button>` : ""}
+        ${isBoard() ? `<button class="btn" data-testid="new-minutes" onclick="openMeetingModal()">New minutes</button>` : ""}
         <button class="btn btn-ghost btn-sm" onclick="openSettingsModal()">Settings</button>
       </div>
     </div>
@@ -715,8 +714,8 @@ function renderList() {
     ${boardNotConfigured}
     ${showDrafts ? `
     <div class="tabs">
-      <button class="tab ${activeTab === "adopted" ? "active" : ""}" data-tab="adopted">Adopted (${adopted.length})</button>
-      <button class="tab ${activeTab === "drafts" ? "active" : ""}" data-tab="drafts">Drafts (${drafts.length})</button>
+      <button class="tab ${activeTab === "adopted" ? "active" : ""}" data-testid="tab" data-tab-id="adopted" data-tab="adopted">Adopted (${adopted.length})</button>
+      <button class="tab ${activeTab === "drafts" ? "active" : ""}" data-testid="tab" data-tab-id="drafts" data-tab="drafts">Drafts (${drafts.length})</button>
     </div>` : ""}
     <div class="section-head">
       <h2>${activeTab === "drafts" ? "Draft minutes" : "Adopted minutes"}</h2>

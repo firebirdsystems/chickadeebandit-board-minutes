@@ -1,0 +1,130 @@
+{
+  "scenarios": [
+    {
+      "name": "draft minutes and the board controls appear only once the configured board group contains you",
+      "members": {
+        "viewer": "adult",
+        "other": "adult"
+      },
+      "steps": [
+        {
+          "action": "seedGroup",
+          "group": "social",
+          "name": "Social Committee",
+          "members": [
+            "other"
+          ]
+        },
+        {
+          "action": "seedGroup",
+          "group": "board",
+          "name": "Board of Directors",
+          "members": [
+            "viewer"
+          ]
+        },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_board_minutes__settings (key, value) VALUES ('board_group_id', ?)",
+          "params": [
+            "{{group:social}}"
+          ]
+        },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'adopted', ?, datetime('now'), datetime('now'))",
+          "params": [
+            "ui-adopted",
+            "March regular meeting",
+            "2026-03-04",
+            "Clubhouse",
+            "Three directors present.",
+            "Routine business.",
+            "{{viewer}}"
+          ]
+        },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'draft', ?, datetime('now'), datetime('now'))",
+          "params": [
+            "ui-draft",
+            "April regular meeting",
+            "2026-04-01",
+            "Clubhouse",
+            "Three directors present.",
+            "Routine business.",
+            "{{viewer}}"
+          ]
+        },
+        {
+          "action": "open",
+          "as": "viewer"
+        },
+        {
+          "action": "expectVisible",
+          "as": "viewer",
+          "selector": "[data-testid=\"meeting-card\"][data-meeting-id=\"ui-adopted\"]"
+        },
+        {
+          "action": "expectCount",
+          "as": "viewer",
+          "selector": "[data-testid=\"new-minutes\"]",
+          "count": 0
+        },
+        {
+          "action": "expectCount",
+          "as": "viewer",
+          "selector": "[data-testid=\"tab\"][data-tab-id=\"drafts\"]",
+          "count": 0
+        },
+        {
+          "action": "expectCount",
+          "as": "viewer",
+          "selector": "[data-testid=\"meeting-card\"]",
+          "count": 1
+        },
+        {
+          "action": "expectNoText",
+          "as": "viewer",
+          "text": "April regular meeting"
+        },
+        {
+          "action": "seedRaw",
+          "sql": "UPDATE app_board_minutes__settings SET value = ? WHERE key = 'board_group_id'",
+          "params": [
+            "{{group:board}}"
+          ]
+        },
+        {
+          "action": "reload",
+          "as": "viewer"
+        },
+        {
+          "action": "expectVisible",
+          "as": "viewer",
+          "selector": "[data-testid=\"meeting-card\"][data-meeting-id=\"ui-adopted\"]"
+        },
+        {
+          "action": "expectVisible",
+          "as": "viewer",
+          "selector": "[data-testid=\"new-minutes\"]"
+        },
+        {
+          "action": "expectVisible",
+          "as": "viewer",
+          "selector": "[data-testid=\"tab\"][data-tab-id=\"drafts\"]"
+        },
+        {
+          "action": "click",
+          "as": "viewer",
+          "selector": "[data-testid=\"tab\"][data-tab-id=\"drafts\"]"
+        },
+        {
+          "action": "expectVisible",
+          "as": "viewer",
+          "selector": "[data-testid=\"meeting-card\"][data-meeting-id=\"ui-draft\"]"
+        }
+      ]
+    }
+  ]
+}
