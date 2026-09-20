@@ -1,5 +1,7 @@
 # Board Minutes
 
+A [Chickadee Bandit](https://chickadeebandit.com/app-library/board-minutes) app.
+
 Official meeting minutes for HOA and association boards — structured motions with
 moved/seconded/outcome, recorded per-member roll-call votes, and immutable adopted
 minutes. HOAs are typically legally required to keep minutes; this keeps them
