@@ -32,6 +32,13 @@ export function isAdopted(meeting) {
   return meeting.status === "adopted";
 }
 
+// Share offers a link only on adopted minutes. The hub mints on any existing
+// row, but the public page enforces `visible_where` (status = "adopted") on
+// read, so a link minted on a draft would open to nothing until adoption.
+export function canShareMeeting(meeting) {
+  return !!meeting && meeting.status === "adopted";
+}
+
 // A meeting is editable only while a draft AND the caller is on the board.
 export function canEditMeeting(meeting, member, groups, boardGroupId) {
   return !isAdopted(meeting) && isBoard(member, groups, boardGroupId);

@@ -71,6 +71,34 @@
       "kind": "app_config"
     }
   },
+  "shareable": {
+    "meeting": {
+      "table": "meetings",
+      "title_column": "title",
+      "columns": [
+        { "column": "meeting_date", "label": "Meeting date", "format": "date" },
+        { "column": "location", "label": "Location" },
+        { "column": "attendees", "label": "Present", "format": "multiline" },
+        { "column": "notes", "label": "Minutes", "format": "multiline" },
+        { "column": "adopted_at", "label": "Adopted", "format": "date" }
+      ],
+      "visible_where": { "column": "status", "values": ["adopted"] },
+      "feed": {
+        "label": "Motions",
+        "table": "motions",
+        "fk_column": "meeting_id",
+        "columns": [
+          { "column": "text", "label": "Motion", "format": "multiline", "role": "body" },
+          { "column": "outcome", "label": "Outcome", "role": "detail",
+            "value_labels": { "open": "Open", "carried": "Carried", "failed": "Failed", "tabled": "Tabled", "withdrawn": "Withdrawn" } }
+        ],
+        "order_column": "sort_order",
+        "order": "oldest",
+        "max_items": 200,
+        "empty_text": "No motions were recorded."
+      }
+    }
+  },
   "admin_config": {
     "settings_table": "settings",
     "keys": ["board_group_id"]

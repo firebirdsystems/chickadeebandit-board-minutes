@@ -103,6 +103,7 @@
     .modal .field { margin-bottom: 12px; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
     .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .head-actions { display: flex; align-items: center; gap: 8px; }
     @media (max-width: 520px) { .head { flex-direction: column; align-items: stretch; } }
     .search-row { margin-bottom: 12px; }
     .search-input {
@@ -120,12 +121,16 @@
 </div>
 
 <script type="module">
-import { esc, memberColor, initial, hubConfirm, searchMatch, hubToday as today } from "/hub-sdk.js";
 import {
-  VOTE_VALUES, MOTION_OUTCOMES, outcomeLabel,
-  isBoard as _isBoard, isAdopted, canEditMeeting as _canEdit,
+  esc, memberColor, initial, hubConfirm, searchMatch, hubToday as today,
+  createShareHelper, activeShareLinks, SHARE_EXPIRY_CHOICES, DEFAULT_SHARE_EXPIRY_HOURS,
+} from "/hub-sdk.js";
+import {
+  VOTE_VALUES, MOTION_OUTCOMES, outcomeLabel, isAdult,
+  isBoard as _isBoard, isAdopted, canEditMeeting as _canEdit, canShareMeeting,
   tally, myVote, votesForMotion, suggestedOutcome, searchableFields,
 } from "./logic.js";
+import { createShareUi, createOverlayView } from "./share.js";
 
 const CONTEXT          = window.__CONTEXT_URL      ?? "";
 const DB               = window.__DB_URL           ?? "";
@@ -147,6 +152,31 @@ let tab = "adopted";
 let error = "";
 let notice = "";
 let modalEl = null;
+
+// External share links (manifest.shareable.meeting). The hub injects the URLs
+// only when the manifest declares `shareable`, and mints for adults only;
+// whether this household or space allows it at all is answered by the panel's
+// first read, which it reports rather than guessing here.
+const share = createShareHelper(window.__SHARE_CREATE_URL, window.__SHARE_REVOKE_URL, window.__SHARE_LIST_URL);
+const CAN_SHARE = share.enabled && isAdult(ME);
+const shareView = createOverlayView(document);
+const shareUi = createShareUi({
+  share,
+  itemType: "meeting",
+  noun: "meeting",
+  scopeHtml: () => "The page shows the adopted minutes: the meeting date and place, who was present, the minutes and each motion with its outcome. Who moved or seconded a motion and how each member voted stay here. Anyone who gets the link can read it.",
+  esc,
+  confirm: (message, opts) => hubConfirm({ message, ...opts, destructive: true }),
+  writeText: (text) => navigator.clipboard.writeText(text),
+  activeLinks: activeShareLinks,
+  expiryChoices: SHARE_EXPIRY_CHOICES,
+  defaultExpiryHours: DEFAULT_SHARE_EXPIRY_HOURS,
+  getMe: () => ME,
+  isAdmin: () => IS_ADMIN,
+  memberName: (id) => memberMap.get(id)?.name ?? "",
+  view: shareView,
+});
+shareView.bind(shareUi);
 
 const nowIso = () => new Date().toISOString();
 const uid = (p) => `${p}-${crypto.randomUUID()}`;
@@ -664,7 +694,10 @@ function renderDetail() {
           <h1>${esc(meeting.title)}</h1>
           <p class="meta">${esc(fmtDate(meeting.meeting_date))}${meeting.location ? ` · ${esc(meeting.location)}` : ""}${adopted && meeting.adopted_at ? ` · adopted ${esc(fmtDate(meeting.adopted_at.slice(0,10)))}` : ""}</p>
         </div>
-        ${statusPill(meeting)}
+        <div class="head-actions">
+          ${CAN_SHARE && canShareMeeting(meeting) ? `<button class="btn btn-ghost btn-sm" data-share-meeting="${esc(meeting.id)}" data-testid="meeting-share">Share</button>` : ""}
+          ${statusPill(meeting)}
+        </div>
       </div>
       ${meeting.attendees ? `<p class="tiny muted"><strong>Present:</strong> ${esc(meeting.attendees)}</p>` : ""}
       ${meeting.notes ? `<p>${esc(meeting.notes)}</p>` : ""}
@@ -752,6 +785,11 @@ document.addEventListener("click", (e) => {
   if (t.hasAttribute("data-edit-meeting")) return window.openMeetingModal(detailId);
   if (t.hasAttribute("data-add-motion")) return window.openMotionModal(detailId);
   if (t.hasAttribute("data-adopt")) return adoptMeeting(t.getAttribute("data-adopt"));
+  if (t.hasAttribute("data-share-meeting")) {
+    const meeting = meetingById(t.getAttribute("data-share-meeting"));
+    if (meeting && canShareMeeting(meeting)) shareUi.open({ id: meeting.id, title: meeting.title });
+    return;
+  }
   if (t.hasAttribute("data-del-meeting")) return deleteMeeting(t.getAttribute("data-del-meeting"));
   if (t.hasAttribute("data-del-motion")) return deleteMotion(t.getAttribute("data-del-motion"));
   if (t.hasAttribute("data-vote")) return castVote(t.getAttribute("data-vote"), t.getAttribute("data-val"));
