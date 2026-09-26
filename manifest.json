@@ -114,6 +114,7 @@
   },
   "delete_cascades": {
     "meetings": [
+      { "table": "motions", "foreign_key": "meeting_id" },
       { "table": "votes", "foreign_key": "meeting_id" }
     ],
     "motions": [
