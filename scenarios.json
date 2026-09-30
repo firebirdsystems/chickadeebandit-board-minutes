@@ -27,6 +27,163 @@
           "expect": { "status": 403 }
         }
       ]
+    },
+    {
+      "name": "a child sees only adopted minutes and cannot write meetings, motions or votes",
+      "members": { "kid": "child", "parent": "adult" },
+      "steps": [
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, status, created_by, created_at, updated_at) VALUES ('m-draft', 'March draft', '2026-03-01', 'draft', ?, '2026-03-02T00:00:00Z', '2026-03-02T00:00:00Z')",
+          "params": ["{{parent}}"]
+        },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, status, created_by, created_at, updated_at, adopted_at) VALUES ('m-adopted', 'February minutes', '2026-02-01', 'adopted', ?, '2026-02-02T00:00:00Z', '2026-02-02T00:00:00Z', '2026-03-01T00:00:00Z')",
+          "params": ["{{parent}}"]
+        },
+        {
+          "action": "db",
+          "as": "kid",
+          "sql": "SELECT id FROM app_board_minutes__meetings",
+          "expect": { "status": 200, "rowCount": 1, "rowsContain": [{ "id": "m-adopted" }] }
+        },
+        {
+          "action": "db",
+          "as": "kid",
+          "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, status, created_by, created_at, updated_at) VALUES ('m-kid', 'Kid meeting', '2026-04-01', 'draft', ?, '2026-04-01T00:00:00Z', '2026-04-01T00:00:00Z')",
+          "params": ["{{kid}}"],
+          "expect": { "status": 403 }
+        },
+        {
+          "action": "db",
+          "as": "kid",
+          "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, recorded_by, created_at, updated_at) VALUES ('mo1', 'm-draft', 'Longer recess', ?, '2026-03-02T00:00:00Z', '2026-03-02T00:00:00Z')",
+          "params": ["{{kid}}"],
+          "expect": { "status": 403 }
+        },
+        {
+          "action": "db",
+          "as": "kid",
+          "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES ('v1', 'm-draft', 'mo1', ?, 'yea', '2026-03-02T00:00:00Z', '2026-03-02T00:00:00Z')",
+          "params": ["{{kid}}"],
+          "expect": { "status": 403 }
+        }
+      ]
+    },
+    {
+      "name": "a board-group member drafts, reads and edits draft minutes; a plain adult outside the group neither sees nor writes them",
+      "members": { "secretary": "adult", "chair": "adult", "member": "adult" },
+      "steps": [
+        { "action": "seedGroup", "group": "board", "name": "Board", "members": ["secretary", "chair"] },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_board_minutes__settings (key, value) VALUES ('board_group_id', ?)",
+          "params": ["{{group:board}}"]
+        },
+        {
+          "action": "db",
+          "as": "secretary",
+          "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, status, created_by, created_at, updated_at) VALUES (?, ?, ?, 'draft', ?, ?, ?)",
+          "params": [
+            "m1",
+            "April meeting",
+            "2026-04-01",
+            "{{secretary}}",
+            "2026-04-02T00:00:00Z",
+            "2026-04-02T00:00:00Z"
+          ],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "member",
+          "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, status, created_by, created_at, updated_at) VALUES (?, ?, ?, 'draft', ?, ?, ?)",
+          "params": ["m2", "Rogue meeting", "2026-04-01", "{{member}}", "2026-04-02T00:00:00Z", "2026-04-02T00:00:00Z"],
+          "expect": { "status": 403 }
+        },
+        {
+          "action": "db",
+          "as": "chair",
+          "sql": "UPDATE app_board_minutes__meetings SET notes = 'Quorum present' WHERE id = ?",
+          "params": ["m1"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "member",
+          "sql": "UPDATE app_board_minutes__meetings SET notes = 'tampered' WHERE id = ?",
+          "params": ["m1"],
+          "expect": { "status": 403 }
+        },
+        {
+          "action": "db",
+          "as": "member",
+          "sql": "SELECT id FROM app_board_minutes__meetings",
+          "expect": { "status": 200, "rowCount": 0 }
+        },
+        {
+          "action": "db",
+          "as": "chair",
+          "sql": "SELECT id, notes FROM app_board_minutes__meetings",
+          "expect": { "status": 200, "rowCount": 1, "rowsContain": [{ "id": "m1", "notes": "Quorum present" }] }
+        }
+      ]
+    },
+    {
+      "name": "a board-group member records motions and their own vote on draft minutes; a plain adult outside the group is refused both",
+      "members": { "director": "adult", "member": "adult" },
+      "steps": [
+        { "action": "seedGroup", "group": "board", "name": "Board", "members": ["director"] },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_board_minutes__settings (key, value) VALUES ('board_group_id', ?)",
+          "params": ["{{group:board}}"]
+        },
+        {
+          "action": "seedRaw",
+          "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, status, created_by, created_at, updated_at) VALUES ('m1', 'April meeting', '2026-04-01', 'draft', ?, '2026-04-02T00:00:00Z', '2026-04-02T00:00:00Z')",
+          "params": ["{{director}}"]
+        },
+        {
+          "action": "db",
+          "as": "member",
+          "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+          "params": ["mo-x", "m1", "Rogue motion", "{{member}}", "2026-04-02T00:00:00Z", "2026-04-02T00:00:00Z"],
+          "expect": { "status": 403 }
+        },
+        {
+          "action": "db",
+          "as": "director",
+          "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+          "params": ["mo1", "m1", "Approve budget", "{{director}}", "2026-04-02T00:00:00Z", "2026-04-02T00:00:00Z"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "member",
+          "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+          "params": ["v-x", "m1", "mo1", "{{member}}", "nay", "2026-04-02T00:00:00Z", "2026-04-02T00:00:00Z"],
+          "expect": { "status": 403 }
+        },
+        {
+          "action": "db",
+          "as": "director",
+          "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+          "params": ["v1", "m1", "mo1", "{{director}}", "yea", "2026-04-02T00:00:00Z", "2026-04-02T00:00:00Z"],
+          "expect": { "status": 200 }
+        },
+        {
+          "action": "db",
+          "as": "director",
+          "sql": "SELECT m.id AS motion_id, v.voter_id, v.vote FROM app_board_minutes__motions m JOIN app_board_minutes__votes v ON v.motion_id = m.id",
+          "expect": {
+            "status": 200,
+            "rowCount": 1,
+            "rowsContain": [{ "motion_id": "mo1", "voter_id": "scn-director", "vote": "yea" }]
+          }
+        }
+      ]
     }
   ]
 }
