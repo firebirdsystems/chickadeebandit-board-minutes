@@ -123,7 +123,7 @@
 <script type="module">
 import {
   esc, memberColor, initial, hubConfirm, searchMatch, hubToday as today,
-  createShareHelper, activeShareLinks, SHARE_EXPIRY_CHOICES, DEFAULT_SHARE_EXPIRY_HOURS,
+  createShareHelper, activeShareLinks, SHARE_EXPIRY_CHOICES, DEFAULT_SHARE_EXPIRY_HOURS, glyph,
 } from "/hub-sdk.js";
 import {
   VOTE_VALUES, MOTION_OUTCOMES, outcomeLabel, isAdult,
@@ -166,6 +166,7 @@ const shareUi = createShareUi({
   noun: "meeting",
   scopeHtml: () => "The page shows the adopted minutes: the meeting date and place, who was present, the minutes and each motion with its outcome. Who moved or seconded a motion and how each member voted stay here. Anyone who gets the link can read it.",
   esc,
+  glyph,
   confirm: (message, opts) => hubConfirm({ message, ...opts, destructive: true }),
   writeText: (text) => navigator.clipboard.writeText(text),
   activeLinks: activeShareLinks,
@@ -551,12 +552,12 @@ window.openSettingsModal = function () {
         <option value="" ${!settings.board_group_id ? "selected" : ""}>— No board configured —</option>
         ${opts}
       </select>
-      <span class="muted tiny">${!boardConfigured() ? "⚠️ Pick a board group to enable creating minutes, motions, and votes — those actions are disabled until one is set." : "Members of this group record minutes and vote on motions."}</span>
+      <span class="muted tiny">${!boardConfigured() ? `${glyph("warning")} Pick a board group to enable creating minutes, motions, and votes — those actions are disabled until one is set.` : "Members of this group record minutes and vote on motions."}</span>
     </div>` : `
     <p class="muted">Board group: <strong>${settings.board_group_id ? esc(groups.find(g => g.id === settings.board_group_id)?.name ?? settings.board_group_id) : "— none —"}</strong></p>
     <p class="tiny muted" style="margin-top:8px">Only a hub admin can change this.</p>`;
   openModal(`
-    <h3>⚙️ Board Minutes settings</h3>
+    <h3>${glyph("gear")} Board Minutes settings</h3>
     ${controls}
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Close</button>
@@ -735,7 +736,7 @@ function renderList() {
   root.innerHTML = `
     <div class="topbar">
       <div>
-        <h1>🏛️ Board Minutes</h1>
+        <h1>${glyph("columns")} Board Minutes</h1>
         <p class="muted tiny">Official meeting minutes with motions and recorded votes.</p>
       </div>
       <div class="row" style="justify-content:flex-end">
