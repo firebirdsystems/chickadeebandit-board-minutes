@@ -1,0 +1,2044 @@
+{
+  "groups": [
+    {
+      "key": "board",
+      "name": "Board of Directors",
+      "members": [
+        "{{me}}",
+        "{{partner}}",
+        "{{adult2}}"
+      ]
+    }
+  ],
+  "seed": [
+    {
+      "sql": "INSERT INTO app_board_minutes__settings (key, value) VALUES (?, ?)",
+      "params": [
+        "board_group_id",
+        "{{group:board}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-2 days','+120 minutes'))",
+      "params": [
+        "perf-bm-01",
+        "May regular meeting",
+        "{{date:-3}}",
+        "Clubhouse",
+        "All three directors present. Two homeowners attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "draft",
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+140 minutes'))",
+      "params": [
+        "perf-mo-01",
+        "perf-bm-01",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        0,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+150 minutes'))",
+      "params": [
+        "perf-bv-001",
+        "perf-bm-01",
+        "perf-mo-01",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+151 minutes'))",
+      "params": [
+        "perf-bv-002",
+        "perf-bm-01",
+        "perf-mo-01",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+152 minutes'))",
+      "params": [
+        "perf-bv-003",
+        "perf-bm-01",
+        "perf-mo-01",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+145 minutes'))",
+      "params": [
+        "perf-mo-02",
+        "perf-bm-01",
+        "Adopt the revised pool hours for the summer season.",
+        "{{adult2}}",
+        "{{me}}",
+        "open",
+        1,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+156 minutes'))",
+      "params": [
+        "perf-bv-004",
+        "perf-bm-01",
+        "perf-mo-02",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+157 minutes'))",
+      "params": [
+        "perf-bv-005",
+        "perf-bm-01",
+        "perf-mo-02",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+150 minutes'))",
+      "params": [
+        "perf-mo-03",
+        "perf-bm-01",
+        "Approve repainting the west fence this spring.",
+        "{{me}}",
+        "{{partner}}",
+        "open",
+        2,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+161 minutes'))",
+      "params": [
+        "perf-bv-006",
+        "perf-bm-01",
+        "perf-mo-03",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+162 minutes'))",
+      "params": [
+        "perf-bv-007",
+        "perf-bm-01",
+        "perf-mo-03",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+145 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+155 minutes'))",
+      "params": [
+        "perf-mo-04",
+        "perf-bm-01",
+        "Table the parking policy revision until the survey closes.",
+        "{{partner}}",
+        "{{adult2}}",
+        "open",
+        3,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+166 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+166 minutes'))",
+      "params": [
+        "perf-bv-008",
+        "perf-bm-01",
+        "perf-mo-04",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+167 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-3 days','+167 minutes'))",
+      "params": [
+        "perf-bv-009",
+        "perf-bm-01",
+        "perf-mo-04",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-16 days','+120 minutes'))",
+      "params": [
+        "perf-bm-02",
+        "April regular meeting",
+        "{{date:-17}}",
+        "Clubhouse",
+        "Three directors present. Property manager attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "draft",
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+140 minutes'))",
+      "params": [
+        "perf-mo-05",
+        "perf-bm-02",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        0,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+150 minutes'))",
+      "params": [
+        "perf-bv-010",
+        "perf-bm-02",
+        "perf-mo-05",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+151 minutes'))",
+      "params": [
+        "perf-bv-011",
+        "perf-bm-02",
+        "perf-mo-05",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+152 minutes'))",
+      "params": [
+        "perf-bv-012",
+        "perf-bm-02",
+        "perf-mo-05",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+145 minutes'))",
+      "params": [
+        "perf-mo-06",
+        "perf-bm-02",
+        "Approve the snow removal contract renewal at the current rate.",
+        "{{me}}",
+        "{{partner}}",
+        "open",
+        1,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+156 minutes'))",
+      "params": [
+        "perf-bv-013",
+        "perf-bm-02",
+        "perf-mo-06",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+157 minutes'))",
+      "params": [
+        "perf-bv-014",
+        "perf-bm-02",
+        "perf-mo-06",
+        "{{adult2}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+150 minutes'))",
+      "params": [
+        "perf-mo-07",
+        "perf-bm-02",
+        "Set the annual meeting for the second Tuesday of November.",
+        "{{partner}}",
+        "{{adult2}}",
+        "open",
+        2,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+161 minutes'))",
+      "params": [
+        "perf-bv-015",
+        "perf-bm-02",
+        "perf-mo-07",
+        "{{partner}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-17 days','+162 minutes'))",
+      "params": [
+        "perf-bv-016",
+        "perf-bm-02",
+        "perf-mo-07",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-25 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-25 days','+120 minutes'))",
+      "params": [
+        "perf-bm-03",
+        "March special session",
+        "{{date:-31}}",
+        "Clubhouse",
+        "Three directors present. Property manager attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+140 minutes'))",
+      "params": [
+        "perf-mo-08",
+        "perf-bm-03",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        0,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+150 minutes'))",
+      "params": [
+        "perf-bv-017",
+        "perf-bm-03",
+        "perf-mo-08",
+        "{{me}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+151 minutes'))",
+      "params": [
+        "perf-bv-018",
+        "perf-bm-03",
+        "perf-mo-08",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+152 minutes'))",
+      "params": [
+        "perf-bv-019",
+        "perf-bm-03",
+        "perf-mo-08",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+145 minutes'))",
+      "params": [
+        "perf-mo-09",
+        "perf-bm-03",
+        "Authorize emergency repair of the front gate motor.",
+        "{{me}}",
+        "{{partner}}",
+        "failed",
+        1,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+155 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+155 minutes'))",
+      "params": [
+        "perf-bv-020",
+        "perf-bm-03",
+        "perf-mo-09",
+        "{{me}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+156 minutes'))",
+      "params": [
+        "perf-bv-021",
+        "perf-bm-03",
+        "perf-mo-09",
+        "{{partner}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+157 minutes'))",
+      "params": [
+        "perf-bv-022",
+        "perf-bm-03",
+        "perf-mo-09",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+150 minutes'))",
+      "params": [
+        "perf-mo-10",
+        "perf-bm-03",
+        "Approve the landscaping contract with GreenScape for $12,400.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        2,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+160 minutes'))",
+      "params": [
+        "perf-bv-023",
+        "perf-bm-03",
+        "perf-mo-10",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+161 minutes'))",
+      "params": [
+        "perf-bv-024",
+        "perf-bm-03",
+        "perf-mo-10",
+        "{{partner}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-31 days','+162 minutes'))",
+      "params": [
+        "perf-bv-025",
+        "perf-bm-03",
+        "perf-mo-10",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-39 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-39 days','+120 minutes'))",
+      "params": [
+        "perf-bm-04",
+        "February regular meeting",
+        "{{date:-45}}",
+        "Video call",
+        "All three directors present. Two homeowners attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+140 minutes'))",
+      "params": [
+        "perf-mo-11",
+        "perf-bm-04",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        0,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+150 minutes'))",
+      "params": [
+        "perf-bv-026",
+        "perf-bm-04",
+        "perf-mo-11",
+        "{{me}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+151 minutes'))",
+      "params": [
+        "perf-bv-027",
+        "perf-bm-04",
+        "perf-mo-11",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+152 minutes'))",
+      "params": [
+        "perf-bv-028",
+        "perf-bm-04",
+        "perf-mo-11",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+145 minutes'))",
+      "params": [
+        "perf-mo-12",
+        "perf-bm-04",
+        "Adopt the revised pool hours for the summer season.",
+        "{{me}}",
+        "{{partner}}",
+        "carried",
+        1,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+155 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+155 minutes'))",
+      "params": [
+        "perf-bv-029",
+        "perf-bm-04",
+        "perf-mo-12",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+156 minutes'))",
+      "params": [
+        "perf-bv-030",
+        "perf-bm-04",
+        "perf-mo-12",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+157 minutes'))",
+      "params": [
+        "perf-bv-031",
+        "perf-bm-04",
+        "perf-mo-12",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+150 minutes'))",
+      "params": [
+        "perf-mo-13",
+        "perf-bm-04",
+        "Approve repainting the west fence this spring.",
+        "{{partner}}",
+        "withdrawn",
+        2,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+145 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-45 days','+155 minutes'))",
+      "params": [
+        "perf-mo-14",
+        "perf-bm-04",
+        "Table the parking policy revision until the survey closes.",
+        "{{adult2}}",
+        "{{me}}",
+        "tabled",
+        3,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-53 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-53 days','+120 minutes'))",
+      "params": [
+        "perf-bm-05",
+        "January budget workshop",
+        "{{date:-59}}",
+        "Clubhouse",
+        "Three directors present. Property manager attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+140 minutes'))",
+      "params": [
+        "perf-mo-15",
+        "perf-bm-05",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{me}}",
+        "{{partner}}",
+        "carried",
+        0,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+150 minutes'))",
+      "params": [
+        "perf-bv-032",
+        "perf-bm-05",
+        "perf-mo-15",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+151 minutes'))",
+      "params": [
+        "perf-bv-033",
+        "perf-bm-05",
+        "perf-mo-15",
+        "{{partner}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+152 minutes'))",
+      "params": [
+        "perf-bv-034",
+        "perf-bm-05",
+        "perf-mo-15",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+145 minutes'))",
+      "params": [
+        "perf-mo-16",
+        "perf-bm-05",
+        "Approve the snow removal contract renewal at the current rate.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        1,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+155 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+155 minutes'))",
+      "params": [
+        "perf-bv-035",
+        "perf-bm-05",
+        "perf-mo-16",
+        "{{me}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+156 minutes'))",
+      "params": [
+        "perf-bv-036",
+        "perf-bm-05",
+        "perf-mo-16",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+157 minutes'))",
+      "params": [
+        "perf-bv-037",
+        "perf-bm-05",
+        "perf-mo-16",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+150 minutes'))",
+      "params": [
+        "perf-mo-17",
+        "perf-bm-05",
+        "Set the annual meeting for the second Tuesday of November.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        2,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+160 minutes'))",
+      "params": [
+        "perf-bv-038",
+        "perf-bm-05",
+        "perf-mo-17",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+161 minutes'))",
+      "params": [
+        "perf-bv-039",
+        "perf-bm-05",
+        "perf-mo-17",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-59 days','+162 minutes'))",
+      "params": [
+        "perf-bv-040",
+        "perf-bm-05",
+        "perf-mo-17",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-67 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-67 days','+120 minutes'))",
+      "params": [
+        "perf-bm-06",
+        "December regular meeting",
+        "{{date:-73}}",
+        "Clubhouse",
+        "Three directors present. Property manager attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+140 minutes'))",
+      "params": [
+        "perf-mo-18",
+        "perf-bm-06",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{me}}",
+        "{{partner}}",
+        "failed",
+        0,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+150 minutes'))",
+      "params": [
+        "perf-bv-041",
+        "perf-bm-06",
+        "perf-mo-18",
+        "{{me}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+151 minutes'))",
+      "params": [
+        "perf-bv-042",
+        "perf-bm-06",
+        "perf-mo-18",
+        "{{partner}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+152 minutes'))",
+      "params": [
+        "perf-bv-043",
+        "perf-bm-06",
+        "perf-mo-18",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+145 minutes'))",
+      "params": [
+        "perf-mo-19",
+        "perf-bm-06",
+        "Authorize emergency repair of the front gate motor.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        1,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+155 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+155 minutes'))",
+      "params": [
+        "perf-bv-044",
+        "perf-bm-06",
+        "perf-mo-19",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+156 minutes'))",
+      "params": [
+        "perf-bv-045",
+        "perf-bm-06",
+        "perf-mo-19",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+157 minutes'))",
+      "params": [
+        "perf-bv-046",
+        "perf-bm-06",
+        "perf-mo-19",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+150 minutes'))",
+      "params": [
+        "perf-mo-20",
+        "perf-bm-06",
+        "Approve the landscaping contract with GreenScape for $12,400.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        2,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+160 minutes'))",
+      "params": [
+        "perf-bv-047",
+        "perf-bm-06",
+        "perf-mo-20",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+161 minutes'))",
+      "params": [
+        "perf-bv-048",
+        "perf-bm-06",
+        "perf-mo-20",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-73 days','+162 minutes'))",
+      "params": [
+        "perf-bv-049",
+        "perf-bm-06",
+        "perf-mo-20",
+        "{{adult2}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-81 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-81 days','+120 minutes'))",
+      "params": [
+        "perf-bm-07",
+        "November regular meeting",
+        "{{date:-87}}",
+        "Clubhouse",
+        "All three directors present. Two homeowners attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+140 minutes'))",
+      "params": [
+        "perf-mo-21",
+        "perf-bm-07",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{me}}",
+        "{{partner}}",
+        "tabled",
+        0,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+145 minutes'))",
+      "params": [
+        "perf-mo-22",
+        "perf-bm-07",
+        "Adopt the revised pool hours for the summer season.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        1,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+155 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+155 minutes'))",
+      "params": [
+        "perf-bv-050",
+        "perf-bm-07",
+        "perf-mo-22",
+        "{{me}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+156 minutes'))",
+      "params": [
+        "perf-bv-051",
+        "perf-bm-07",
+        "perf-mo-22",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+157 minutes'))",
+      "params": [
+        "perf-bv-052",
+        "perf-bm-07",
+        "perf-mo-22",
+        "{{adult2}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+150 minutes'))",
+      "params": [
+        "perf-mo-23",
+        "perf-bm-07",
+        "Approve repainting the west fence this spring.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        2,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+160 minutes'))",
+      "params": [
+        "perf-bv-053",
+        "perf-bm-07",
+        "perf-mo-23",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+161 minutes'))",
+      "params": [
+        "perf-bv-054",
+        "perf-bm-07",
+        "perf-mo-23",
+        "{{partner}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+162 minutes'))",
+      "params": [
+        "perf-bv-055",
+        "perf-bm-07",
+        "perf-mo-23",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+145 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+155 minutes'))",
+      "params": [
+        "perf-mo-24",
+        "perf-bm-07",
+        "Table the parking policy revision until the survey closes.",
+        "{{me}}",
+        "{{partner}}",
+        "carried",
+        3,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+165 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+165 minutes'))",
+      "params": [
+        "perf-bv-056",
+        "perf-bm-07",
+        "perf-mo-24",
+        "{{me}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+166 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+166 minutes'))",
+      "params": [
+        "perf-bv-057",
+        "perf-bm-07",
+        "perf-mo-24",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+167 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-87 days','+167 minutes'))",
+      "params": [
+        "perf-bv-058",
+        "perf-bm-07",
+        "perf-mo-24",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-95 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-95 days','+120 minutes'))",
+      "params": [
+        "perf-bm-08",
+        "October special session",
+        "{{date:-101}}",
+        "Video call",
+        "Three directors present. Property manager attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+140 minutes'))",
+      "params": [
+        "perf-mo-25",
+        "perf-bm-08",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        0,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+150 minutes'))",
+      "params": [
+        "perf-bv-059",
+        "perf-bm-08",
+        "perf-mo-25",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+151 minutes'))",
+      "params": [
+        "perf-bv-060",
+        "perf-bm-08",
+        "perf-mo-25",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+152 minutes'))",
+      "params": [
+        "perf-bv-061",
+        "perf-bm-08",
+        "perf-mo-25",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+145 minutes'))",
+      "params": [
+        "perf-mo-26",
+        "perf-bm-08",
+        "Approve the snow removal contract renewal at the current rate.",
+        "{{adult2}}",
+        "withdrawn",
+        1,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+150 minutes'))",
+      "params": [
+        "perf-mo-27",
+        "perf-bm-08",
+        "Set the annual meeting for the second Tuesday of November.",
+        "{{me}}",
+        "{{partner}}",
+        "failed",
+        2,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+160 minutes'))",
+      "params": [
+        "perf-bv-062",
+        "perf-bm-08",
+        "perf-mo-27",
+        "{{me}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+161 minutes'))",
+      "params": [
+        "perf-bv-063",
+        "perf-bm-08",
+        "perf-mo-27",
+        "{{partner}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-101 days','+162 minutes'))",
+      "params": [
+        "perf-bv-064",
+        "perf-bm-08",
+        "perf-mo-27",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-109 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-109 days','+120 minutes'))",
+      "params": [
+        "perf-bm-09",
+        "September regular meeting",
+        "{{date:-115}}",
+        "Clubhouse",
+        "Three directors present. Property manager attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+140 minutes'))",
+      "params": [
+        "perf-mo-28",
+        "perf-bm-09",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{partner}}",
+        "{{adult2}}",
+        "tabled",
+        0,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+145 minutes'))",
+      "params": [
+        "perf-mo-29",
+        "perf-bm-09",
+        "Authorize emergency repair of the front gate motor.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        1,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+155 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+155 minutes'))",
+      "params": [
+        "perf-bv-065",
+        "perf-bm-09",
+        "perf-mo-29",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+156 minutes'))",
+      "params": [
+        "perf-bv-066",
+        "perf-bm-09",
+        "perf-mo-29",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+157 minutes'))",
+      "params": [
+        "perf-bv-067",
+        "perf-bm-09",
+        "perf-mo-29",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+150 minutes'))",
+      "params": [
+        "perf-mo-30",
+        "perf-bm-09",
+        "Approve the landscaping contract with GreenScape for $12,400.",
+        "{{me}}",
+        "{{partner}}",
+        "carried",
+        2,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+160 minutes'))",
+      "params": [
+        "perf-bv-068",
+        "perf-bm-09",
+        "perf-mo-30",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+161 minutes'))",
+      "params": [
+        "perf-bv-069",
+        "perf-bm-09",
+        "perf-mo-30",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-115 days','+162 minutes'))",
+      "params": [
+        "perf-bv-070",
+        "perf-bm-09",
+        "perf-mo-30",
+        "{{adult2}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-123 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-123 days','+120 minutes'))",
+      "params": [
+        "perf-bm-10",
+        "August budget workshop",
+        "{{date:-129}}",
+        "Clubhouse",
+        "All three directors present. Two homeowners attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+140 minutes'))",
+      "params": [
+        "perf-mo-31",
+        "perf-bm-10",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        0,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+150 minutes'))",
+      "params": [
+        "perf-bv-071",
+        "perf-bm-10",
+        "perf-mo-31",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+151 minutes'))",
+      "params": [
+        "perf-bv-072",
+        "perf-bm-10",
+        "perf-mo-31",
+        "{{partner}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+152 minutes'))",
+      "params": [
+        "perf-bv-073",
+        "perf-bm-10",
+        "perf-mo-31",
+        "{{adult2}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+145 minutes'))",
+      "params": [
+        "perf-mo-32",
+        "perf-bm-10",
+        "Adopt the revised pool hours for the summer season.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        1,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+155 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+155 minutes'))",
+      "params": [
+        "perf-bv-074",
+        "perf-bm-10",
+        "perf-mo-32",
+        "{{me}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+156 minutes'))",
+      "params": [
+        "perf-bv-075",
+        "perf-bm-10",
+        "perf-mo-32",
+        "{{partner}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+157 minutes'))",
+      "params": [
+        "perf-bv-076",
+        "perf-bm-10",
+        "perf-mo-32",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+150 minutes'))",
+      "params": [
+        "perf-mo-33",
+        "perf-bm-10",
+        "Approve repainting the west fence this spring.",
+        "{{me}}",
+        "{{partner}}",
+        "carried",
+        2,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+160 minutes'))",
+      "params": [
+        "perf-bv-077",
+        "perf-bm-10",
+        "perf-mo-33",
+        "{{me}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+161 minutes'))",
+      "params": [
+        "perf-bv-078",
+        "perf-bm-10",
+        "perf-mo-33",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+162 minutes'))",
+      "params": [
+        "perf-bv-079",
+        "perf-bm-10",
+        "perf-mo-33",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+145 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+155 minutes'))",
+      "params": [
+        "perf-mo-34",
+        "perf-bm-10",
+        "Table the parking policy revision until the survey closes.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        3,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+165 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+165 minutes'))",
+      "params": [
+        "perf-bv-080",
+        "perf-bm-10",
+        "perf-mo-34",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+166 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+166 minutes'))",
+      "params": [
+        "perf-bv-081",
+        "perf-bm-10",
+        "perf-mo-34",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+167 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-129 days','+167 minutes'))",
+      "params": [
+        "perf-bv-082",
+        "perf-bm-10",
+        "perf-mo-34",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-137 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-137 days','+120 minutes'))",
+      "params": [
+        "perf-bm-11",
+        "July regular meeting",
+        "{{date:-143}}",
+        "Clubhouse",
+        "Three directors present. Property manager attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+140 minutes'))",
+      "params": [
+        "perf-mo-35",
+        "perf-bm-11",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{adult2}}",
+        "{{me}}",
+        "tabled",
+        0,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+145 minutes'))",
+      "params": [
+        "perf-mo-36",
+        "perf-bm-11",
+        "Approve the snow removal contract renewal at the current rate.",
+        "{{me}}",
+        "{{partner}}",
+        "failed",
+        1,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+155 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+155 minutes'))",
+      "params": [
+        "perf-bv-083",
+        "perf-bm-11",
+        "perf-mo-36",
+        "{{me}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+156 minutes'))",
+      "params": [
+        "perf-bv-084",
+        "perf-bm-11",
+        "perf-mo-36",
+        "{{partner}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+157 minutes'))",
+      "params": [
+        "perf-bv-085",
+        "perf-bm-11",
+        "perf-mo-36",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+150 minutes'))",
+      "params": [
+        "perf-mo-37",
+        "perf-bm-11",
+        "Set the annual meeting for the second Tuesday of November.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        2,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+160 minutes'))",
+      "params": [
+        "perf-bv-086",
+        "perf-bm-11",
+        "perf-mo-37",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+161 minutes'))",
+      "params": [
+        "perf-bv-087",
+        "perf-bm-11",
+        "perf-mo-37",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-143 days','+162 minutes'))",
+      "params": [
+        "perf-bv-088",
+        "perf-bm-11",
+        "perf-mo-37",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-151 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-151 days','+120 minutes'))",
+      "params": [
+        "perf-bm-12",
+        "June regular meeting",
+        "{{date:-157}}",
+        "Video call",
+        "Three directors present. Property manager attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+140 minutes'))",
+      "params": [
+        "perf-mo-38",
+        "perf-bm-12",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        0,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+150 minutes'))",
+      "params": [
+        "perf-bv-089",
+        "perf-bm-12",
+        "perf-mo-38",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+151 minutes'))",
+      "params": [
+        "perf-bv-090",
+        "perf-bm-12",
+        "perf-mo-38",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+152 minutes'))",
+      "params": [
+        "perf-bv-091",
+        "perf-bm-12",
+        "perf-mo-38",
+        "{{adult2}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+145 minutes'))",
+      "params": [
+        "perf-mo-39",
+        "perf-bm-12",
+        "Authorize emergency repair of the front gate motor.",
+        "{{me}}",
+        "withdrawn",
+        1,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+150 minutes'))",
+      "params": [
+        "perf-mo-40",
+        "perf-bm-12",
+        "Approve the landscaping contract with GreenScape for $12,400.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        2,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+160 minutes'))",
+      "params": [
+        "perf-bv-092",
+        "perf-bm-12",
+        "perf-mo-40",
+        "{{me}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+161 minutes'))",
+      "params": [
+        "perf-bv-093",
+        "perf-bm-12",
+        "perf-mo-40",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-157 days','+162 minutes'))",
+      "params": [
+        "perf-bv-094",
+        "perf-bm-12",
+        "perf-mo-40",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-165 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-165 days','+120 minutes'))",
+      "params": [
+        "perf-bm-13",
+        "May special session",
+        "{{date:-171}}",
+        "Clubhouse",
+        "All three directors present. Two homeowners attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+140 minutes'))",
+      "params": [
+        "perf-mo-41",
+        "perf-bm-13",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        0,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+150 minutes'))",
+      "params": [
+        "perf-bv-095",
+        "perf-bm-13",
+        "perf-mo-41",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+151 minutes'))",
+      "params": [
+        "perf-bv-096",
+        "perf-bm-13",
+        "perf-mo-41",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+152 minutes'))",
+      "params": [
+        "perf-bv-097",
+        "perf-bm-13",
+        "perf-mo-41",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+145 minutes'))",
+      "params": [
+        "perf-mo-42",
+        "perf-bm-13",
+        "Adopt the revised pool hours for the summer season.",
+        "{{me}}",
+        "{{partner}}",
+        "tabled",
+        1,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+150 minutes'))",
+      "params": [
+        "perf-mo-43",
+        "perf-bm-13",
+        "Approve repainting the west fence this spring.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        2,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+160 minutes'))",
+      "params": [
+        "perf-bv-098",
+        "perf-bm-13",
+        "perf-mo-43",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+161 minutes'))",
+      "params": [
+        "perf-bv-099",
+        "perf-bm-13",
+        "perf-mo-43",
+        "{{partner}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+162 minutes'))",
+      "params": [
+        "perf-bv-100",
+        "perf-bm-13",
+        "perf-mo-43",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+145 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+155 minutes'))",
+      "params": [
+        "perf-mo-44",
+        "perf-bm-13",
+        "Table the parking policy revision until the survey closes.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        3,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+165 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+165 minutes'))",
+      "params": [
+        "perf-bv-101",
+        "perf-bm-13",
+        "perf-mo-44",
+        "{{me}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+166 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+166 minutes'))",
+      "params": [
+        "perf-bv-102",
+        "perf-bm-13",
+        "perf-mo-44",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+167 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-171 days','+167 minutes'))",
+      "params": [
+        "perf-bv-103",
+        "perf-bm-13",
+        "perf-mo-44",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-179 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-179 days','+120 minutes'))",
+      "params": [
+        "perf-bm-14",
+        "April regular meeting",
+        "{{date:-185}}",
+        "Clubhouse",
+        "Three directors present. Property manager attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+140 minutes'))",
+      "params": [
+        "perf-mo-45",
+        "perf-bm-14",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{me}}",
+        "{{partner}}",
+        "failed",
+        0,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+150 minutes'))",
+      "params": [
+        "perf-bv-104",
+        "perf-bm-14",
+        "perf-mo-45",
+        "{{me}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+151 minutes'))",
+      "params": [
+        "perf-bv-105",
+        "perf-bm-14",
+        "perf-mo-45",
+        "{{partner}}",
+        "nay"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+152 minutes'))",
+      "params": [
+        "perf-bv-106",
+        "perf-bm-14",
+        "perf-mo-45",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+145 minutes'))",
+      "params": [
+        "perf-mo-46",
+        "perf-bm-14",
+        "Approve the snow removal contract renewal at the current rate.",
+        "{{partner}}",
+        "{{adult2}}",
+        "carried",
+        1,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+155 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+155 minutes'))",
+      "params": [
+        "perf-bv-107",
+        "perf-bm-14",
+        "perf-mo-46",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+156 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+156 minutes'))",
+      "params": [
+        "perf-bv-108",
+        "perf-bm-14",
+        "perf-mo-46",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+157 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+157 minutes'))",
+      "params": [
+        "perf-bv-109",
+        "perf-bm-14",
+        "perf-mo-46",
+        "{{adult2}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+150 minutes'))",
+      "params": [
+        "perf-mo-47",
+        "perf-bm-14",
+        "Set the annual meeting for the second Tuesday of November.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        2,
+        "{{partner}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+160 minutes'))",
+      "params": [
+        "perf-bv-110",
+        "perf-bm-14",
+        "perf-mo-47",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+161 minutes'))",
+      "params": [
+        "perf-bv-111",
+        "perf-bm-14",
+        "perf-mo-47",
+        "{{partner}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-185 days','+162 minutes'))",
+      "params": [
+        "perf-bv-112",
+        "perf-bm-14",
+        "perf-mo-47",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__meetings (id, title, meeting_date, location, attendees, notes, status, created_by, created_at, updated_at, adopted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-193 days','+120 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-193 days','+120 minutes'))",
+      "params": [
+        "perf-bm-15",
+        "March budget workshop",
+        "{{date:-199}}",
+        "Clubhouse",
+        "Three directors present. Property manager attended.",
+        "Called to order at 7:00 pm. Treasurer reported operating balance and reserve balance; both on budget. Old business: gate repair complete, landscaping bids received. New business recorded as motions below. Adjourned at 8:10 pm.",
+        "adopted",
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+130 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+140 minutes'))",
+      "params": [
+        "perf-mo-48",
+        "perf-bm-15",
+        "Approve the minutes of the previous meeting as distributed.",
+        "{{me}}",
+        "{{partner}}",
+        "carried",
+        0,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+150 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+150 minutes'))",
+      "params": [
+        "perf-bv-113",
+        "perf-bm-15",
+        "perf-mo-48",
+        "{{me}}",
+        "abstain"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+151 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+151 minutes'))",
+      "params": [
+        "perf-bv-114",
+        "perf-bm-15",
+        "perf-mo-48",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+152 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+152 minutes'))",
+      "params": [
+        "perf-bv-115",
+        "perf-bm-15",
+        "perf-mo-48",
+        "{{adult2}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+135 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+145 minutes'))",
+      "params": [
+        "perf-mo-49",
+        "perf-bm-15",
+        "Authorize emergency repair of the front gate motor.",
+        "{{partner}}",
+        "{{adult2}}",
+        "tabled",
+        1,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__motions (id, meeting_id, text, moved_by, seconded_by, outcome, sort_order, recorded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+140 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+150 minutes'))",
+      "params": [
+        "perf-mo-50",
+        "perf-bm-15",
+        "Approve the landscaping contract with GreenScape for $12,400.",
+        "{{adult2}}",
+        "{{me}}",
+        "carried",
+        2,
+        "{{me}}"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+160 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+160 minutes'))",
+      "params": [
+        "perf-bv-116",
+        "perf-bm-15",
+        "perf-mo-50",
+        "{{me}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+161 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+161 minutes'))",
+      "params": [
+        "perf-bv-117",
+        "perf-bm-15",
+        "perf-mo-50",
+        "{{partner}}",
+        "yea"
+      ]
+    },
+    {
+      "sql": "INSERT INTO app_board_minutes__votes (id, meeting_id, motion_id, voter_id, vote, created_at, updated_at) VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+162 minutes'), strftime('%Y-%m-%dT%H:%M:%fZ','now','-199 days','+162 minutes'))",
+      "params": [
+        "perf-bv-118",
+        "perf-bm-15",
+        "perf-mo-50",
+        "{{adult2}}",
+        "yea"
+      ]
+    }
+  ]
+}
