@@ -202,6 +202,11 @@ async function db(sql, params = []) {
   return json;
 }
 
+// Only wording this app wrote for the reader is shown; a hub error is logged
+// and the reader gets the action's own line.
+function userError(msg) { return Object.assign(new Error(msg), { forUser: true }); }
+function failText(e, line) { if (!e?.forUser) if (!e?.forUser) console.error(e); return e?.forUser ? e.message : line; }
+
 // An UPDATE or DELETE of one row. The hub answers 200 with `changed: 0` when
 // the minutes are already adopted (frozen) or the caller is not on the board,
 // so that is re-read and reported rather than shown as saved.
@@ -210,7 +215,7 @@ async function change(sql, params = []) {
   if (res.changed === 0) {
     await loadData().catch(() => {});
     if (detailId && !meetingById(detailId)) detailId = null;
-    throw new Error("Nothing was changed. These minutes may already be adopted, or only the board can edit them.");
+    throw userError("Nothing was changed. These minutes may already be adopted, or only the board can edit them.");
   }
   return res;
 }
@@ -303,7 +308,7 @@ async function refresh() {
     loadFailed = false;
     render();
   } catch (e) {
-    if (loaded) error = e.message;
+    if (loaded) { console.error(e); error = "Couldn’t load the minutes."; }
     else loadFailed = true;
     render();
   }
@@ -341,7 +346,7 @@ async function submitMeetingForm(form) {
     tab = "drafts";
     closeModal();
     showNotice("Draft minutes created.");
-  } catch (e) { showError(e.message); }
+  } catch (e) { showError(failText(e, "Couldn’t create the minutes — try again.")); }
 }
 
 async function saveMeetingNotes(meetingId, patch) {
@@ -399,7 +404,7 @@ async function adoptMeeting(meetingId) {
       adopted_at: at,
     });
     showNotice("Minutes adopted.");
-  } catch (e) { showError(e.message); }
+  } catch (e) { showError(failText(e, "Couldn’t adopt the minutes — try again.")); }
 }
 
 async function deleteMeeting(meetingId) {
@@ -414,7 +419,7 @@ async function deleteMeeting(meetingId) {
     votes = votes.filter(v => v.meeting_id !== meetingId);
     detailId = null;
     showNotice("Draft deleted.");
-  } catch (e) { showError(e.message); }
+  } catch (e) { showError(failText(e, "Couldn’t delete the draft — try again.")); }
 }
 
 // ── Motion actions (board only, draft meetings only) ─────────────────────────────
@@ -438,7 +443,7 @@ async function addMotion(meetingId, text, movedBy) {
     motions = [...motions, motion];
     closeModal();
     showNotice("Motion added.");
-  } catch (e) { showError(e.message); }
+  } catch (e) { showError(failText(e, "Couldn’t add the motion — try again.")); }
 }
 
 async function patchMotion(motionId, patch) {
@@ -452,7 +457,7 @@ async function patchMotion(motionId, patch) {
     if (DB) await change(`UPDATE app_board_minutes__motions SET ${set}, updated_at = ? WHERE id = ?`, [...cols.map(c => patch[c]), nowIso(), motionId]);
     motions = motions.map(m => m.id === motionId ? { ...m, ...patch } : m);
     render();
-  } catch (e) { showError(e.message); }
+  } catch (e) { showError(failText(e, "Couldn’t update the motion — try again.")); }
 }
 
 async function deleteMotion(motionId) {
@@ -472,7 +477,7 @@ async function deleteMotion(motionId) {
     motions = motions.filter(m => m.id !== motionId);
     votes = votes.filter(v => v.motion_id !== motionId);
     showNotice("Motion removed.");
-  } catch (e) { showError(e.message); }
+  } catch (e) { showError(failText(e, "Couldn’t remove the motion — try again.")); }
 }
 
 // ── Voting (each board member records their OWN vote) ────────────────────────────
@@ -500,7 +505,7 @@ async function castVote(motionId, value) {
       votes = [...votes, vote];
     }
     render();
-  } catch (e) { showError(e.message); }
+  } catch (e) { showError(failText(e, "Couldn’t record your vote — try again.")); }
 }
 
 // ── Modals ──────────────────────────────────────────────────────────────────────
@@ -608,7 +613,7 @@ window.saveSettings = async function () {
     render();
   } catch (e) {
     if (btn) { btn.disabled = false; btn.textContent = "Save"; }
-    showError(e.message);
+    showError(failText(e, "Couldn’t save the settings — try again."));
   }
 };
 
@@ -857,7 +862,7 @@ document.addEventListener("submit", (e) => {
       location: form.location.value.trim(), attendees: form.attendees.value.trim(), notes: form.notes.value.trim(),
     };
     const p = editId ? saveMeetingNotes(editId, patch) : submitMeetingForm(form);
-    Promise.resolve(p).catch((err) => { if (btn) { btn.disabled = false; btn.textContent = "Save"; } showError(err.message); });
+    Promise.resolve(p).catch((err) => { if (btn) { btn.disabled = false; btn.textContent = "Save"; } showError(failText(err, "Couldn’t save the minutes — try again.")); });
     return;
   }
   if (form.id === "motion-form") {
@@ -867,7 +872,7 @@ document.addEventListener("submit", (e) => {
     if (!text) { form.text.focus(); return; }
     if (btn) { btn.disabled = true; btn.textContent = "Adding…"; }
     addMotion(form.getAttribute("data-meeting"), text, form.moved_by.value)
-      .catch((err) => { if (btn) { btn.disabled = false; btn.textContent = "Add motion"; } showError(err.message); });
+      .catch((err) => { if (btn) { btn.disabled = false; btn.textContent = "Add motion"; } showError(failText(err, "Couldn’t add the motion — try again.")); });
     return;
   }
 });
