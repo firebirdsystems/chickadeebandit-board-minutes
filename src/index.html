@@ -106,6 +106,8 @@
     .head-actions { display: flex; align-items: center; gap: 8px; }
     @media (max-width: 520px) { .head { flex-direction: column; align-items: stretch; } }
     .search-row { margin-bottom: 12px; }
+    .load-error { margin: 0 0 12px; padding: 10px 14px; border-radius: 10px; background: var(--hub-tint-danger, #fee2e2); color: var(--hub-tint-danger-fg, #b91c1c); font-size: 0.9rem; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+    .load-error-retry { background: none; border: 1px solid currentColor; border-radius: 8px; padding: 5px 10px; font: inherit; font-weight: 600; color: inherit; cursor: pointer; flex-shrink: 0; }
     .search-input {
       width: 100%; border: 1.5px solid var(--border-mid, var(--border, #d1d5db));
       border-radius: 8px; padding: 9px 11px; font: inherit;
@@ -195,9 +197,22 @@ async function db(sql, params = []) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sql, params }),
   });
-  const json = await res.json();
-  if (json.error) throw new Error(json.error);
+  const json = await res.json().catch(() => null);
+  if (!res.ok || !json || typeof json !== "object" || json.error) throw new Error(json?.error || "Couldn’t reach the hub. Try again.");
   return json;
+}
+
+// An UPDATE or DELETE of one row. The hub answers 200 with `changed: 0` when
+// the minutes are already adopted (frozen) or the caller is not on the board,
+// so that is re-read and reported rather than shown as saved.
+async function change(sql, params = []) {
+  const res = await db(sql, params);
+  if (res.changed === 0) {
+    await loadData().catch(() => {});
+    if (detailId && !meetingById(detailId)) detailId = null;
+    throw new Error("Nothing was changed. These minutes may already be adopted, or only the board can edit them.");
+  }
+  return res;
 }
 
 async function saveSetting(key, value) {
@@ -225,21 +240,23 @@ async function loadContext() {
     memberMap = new Map(members.map(m => [m.id, m]));
     return;
   }
-  try {
-    const res = await fetch(`${CONTEXT}?keys=family.members,family.groups`);
-    const data = await res.json();
-    members = data["family.members"] ?? [];
-    groups  = data["family.groups"]  ?? [];
-  } catch { members = []; groups = []; }
+  // A failed read throws: an empty roster would make every board check false.
+  const res = await fetch(`${CONTEXT}?keys=family.members,family.groups`);
+  const data = await res.json().catch(() => null);
+  if (!res.ok || data === null || typeof data !== "object" || Array.isArray(data)) throw new Error("Couldn’t reach the hub. Try again.");
+  // A 200 that names either key in `$errors` is the hub failing to read it.
+  if (Array.isArray(data.$errors) && data.$errors.some(k => k === "family.members" || k === "family.groups")) throw new Error("Couldn’t reach the hub. Try again.");
+  members = data["family.members"] ?? [];
+  groups  = data["family.groups"]  ?? [];
   memberMap = new Map(members.map(m => [m.id, m]));
 }
 
 async function loadSettings() {
   if (!DB) { settings = { board_group_id: "board" }; return; }
-  try {
-    const { rows } = await db(`SELECT key, value FROM app_board_minutes__settings WHERE key = 'board_group_id'`);
-    for (const r of rows) if (r.key === "board_group_id") settings.board_group_id = r.value || null;
-  } catch { /* leave defaults */ }
+  // settings is app_config (every member reads it): a rejected read is an outage,
+  // never "no board configured". It throws to refresh().
+  const { rows } = await db(`SELECT key, value FROM app_board_minutes__settings WHERE key = 'board_group_id'`);
+  for (const r of rows) if (r.key === "board_group_id") settings.board_group_id = r.value || null;
 }
 
 async function loadData() {
@@ -272,14 +289,24 @@ function seedDemo() {
   ];
 }
 
+// `loadFailed` is true from a failed first load until a load succeeds. While
+// it is, the page shows only the banner: no lists, no settings, no "new".
+let loaded = false;
+let loadFailed = false;
 async function refresh() {
   clearMessages();
   try {
     await Promise.all([loadContext(), loadSettings()]);
     await loadData();
     if (detailId && !meetingById(detailId)) detailId = null;
+    loaded = true;
+    loadFailed = false;
     render();
-  } catch (e) { error = e.message; render(); }
+  } catch (e) {
+    if (loaded) error = e.message;
+    else loadFailed = true;
+    render();
+  }
 }
 
 function clearMessages() { error = ""; notice = ""; }
@@ -322,13 +349,18 @@ async function saveMeetingNotes(meetingId, patch) {
   if (!meeting || !canEdit(meeting)) return;
   try {
     if (DB) {
-      await db(`UPDATE app_board_minutes__meetings SET title = ?, meeting_date = ?, location = ?, attendees = ?, notes = ?, updated_at = ? WHERE id = ?`,
+      await change(`UPDATE app_board_minutes__meetings SET title = ?, meeting_date = ?, location = ?, attendees = ?, notes = ?, updated_at = ? WHERE id = ?`,
         [patch.title, patch.meeting_date, patch.location, patch.attendees, patch.notes, nowIso(), meetingId]);
     }
     meetings = meetings.map(m => m.id === meetingId ? { ...m, ...patch } : m);
     closeModal();
     showNotice("Minutes updated.");
-  } catch (e) { showError(e.message); }
+  } catch (e) {
+    // Minutes that can no longer be edited: the form has nothing left to save.
+    const current = meetingById(meetingId);
+    if (!current || !canEdit(current)) closeModal();
+    throw e; // the form's submit handler re-enables Save and shows the message
+  }
 }
 
 // Best-effort: the row is already written, so a failed publish is not fatal.
@@ -356,7 +388,7 @@ async function adoptMeeting(meetingId) {
   if (!ok) return;
   const at = nowIso();
   try {
-    if (DB) await db(`UPDATE app_board_minutes__meetings SET status = 'adopted', adopted_at = ?, updated_at = ? WHERE id = ?`, [at, at, meetingId]);
+    if (DB) await change(`UPDATE app_board_minutes__meetings SET status = 'adopted', adopted_at = ?, updated_at = ? WHERE id = ?`, [at, at, meetingId]);
     meetings = meetings.map(m => m.id === meetingId ? { ...m, status: "adopted", adopted_at: at } : m);
     // Adoption is the one transition worth publishing: a draft is board-only,
     // and adoption is exactly the moment the minutes become readable by
@@ -376,7 +408,7 @@ async function deleteMeeting(meetingId) {
   const ok = await hubConfirm({ message: "Delete this draft?", description: "Its motions and votes will be removed.", confirmLabel: "Delete", destructive: true });
   if (!ok) return;
   try {
-    if (DB) await db(`DELETE FROM app_board_minutes__meetings WHERE id = ?`, [meetingId]);
+    if (DB) await change(`DELETE FROM app_board_minutes__meetings WHERE id = ?`, [meetingId]);
     meetings = meetings.filter(m => m.id !== meetingId);
     motions = motions.filter(m => m.meeting_id !== meetingId);
     votes = votes.filter(v => v.meeting_id !== meetingId);
@@ -417,7 +449,7 @@ async function patchMotion(motionId, patch) {
   try {
     const cols = Object.keys(patch);
     const set = cols.map(c => `${c} = ?`).join(", ");
-    if (DB) await db(`UPDATE app_board_minutes__motions SET ${set}, updated_at = ? WHERE id = ?`, [...cols.map(c => patch[c]), nowIso(), motionId]);
+    if (DB) await change(`UPDATE app_board_minutes__motions SET ${set}, updated_at = ? WHERE id = ?`, [...cols.map(c => patch[c]), nowIso(), motionId]);
     motions = motions.map(m => m.id === motionId ? { ...m, ...patch } : m);
     render();
   } catch (e) { showError(e.message); }
@@ -436,7 +468,7 @@ async function deleteMotion(motionId) {
     // motion_id pointing at nothing and still counted in the meeting-level
     // tally. The manifest now declares motions → votes(motion_id) in
     // delete_cascades, so the hub deletes them inside this statement's batch.
-    if (DB) await db(`DELETE FROM app_board_minutes__motions WHERE id = ?`, [motionId]);
+    if (DB) await change(`DELETE FROM app_board_minutes__motions WHERE id = ?`, [motionId]);
     motions = motions.filter(m => m.id !== motionId);
     votes = votes.filter(v => v.motion_id !== motionId);
     showNotice("Motion removed.");
@@ -454,7 +486,7 @@ async function castVote(motionId, value) {
   try {
     if (existing) {
       if (existing.vote === value) return; // no change
-      if (DB) await db(`UPDATE app_board_minutes__votes SET vote = ?, updated_at = ? WHERE id = ?`, [value, nowIso(), existing.id]);
+      if (DB) await change(`UPDATE app_board_minutes__votes SET vote = ?, updated_at = ? WHERE id = ?`, [value, nowIso(), existing.id]);
       votes = votes.map(v => v.id === existing.id ? { ...v, vote: value } : v);
     } else {
       const vote = { id: uid("vote"), meeting_id: meeting.id, motion_id: motionId, voter_id: ME.id, vote: value, created_at: nowIso(), updated_at: nowIso() };
@@ -723,6 +755,17 @@ function renderMeetingList(list, activeTab) {
 function renderList() {
   const root = document.getElementById("root");
   root.className = "app";
+  if (loadFailed) {
+    root.innerHTML = `
+    <div class="topbar">
+      <div>
+        <h1>${glyph("columns")} Board Minutes</h1>
+        <p class="muted tiny">Official meeting minutes with motions and recorded votes.</p>
+      </div>
+    </div>
+    <div class="load-error" data-testid="load-error" role="alert"><span>Couldn’t load the minutes.</span> <button type="button" class="load-error-retry" data-testid="load-retry">Try again</button></div>`;
+    return;
+  }
   const adopted = meetings.filter(m => m.status === "adopted");
   const drafts = meetings.filter(m => m.status !== "adopted");
   const showDrafts = isBoard();
@@ -769,7 +812,7 @@ function renderList() {
 }
 
 function render() {
-  if (detailId) renderDetail();
+  if (detailId && !loadFailed) renderDetail();
   else renderList();
 }
 
@@ -781,7 +824,7 @@ document.addEventListener("click", (e) => {
   const t = e.target.closest("button");
   if (!t) return;
   if (t.matches("[data-back]")) { detailId = null; clearMessages(); render(); return; }
-  if (t.matches("[data-refresh]")) return refresh();
+  if (t.matches("[data-refresh]") || t.matches('[data-testid="load-retry"]')) return refresh();
   if (t.hasAttribute("data-tab")) { tab = t.getAttribute("data-tab"); clearMessages(); render(); return; }
   if (t.hasAttribute("data-edit-meeting")) return window.openMeetingModal(detailId);
   if (t.hasAttribute("data-add-motion")) return window.openMotionModal(detailId);
