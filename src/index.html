@@ -351,7 +351,7 @@ async function submitMeetingForm(form) {
 
 async function saveMeetingNotes(meetingId, patch) {
   const meeting = meetingById(meetingId);
-  if (!meeting || !canEdit(meeting)) return;
+  if (!meeting || !canEdit(meeting)) { closeModal(); return showError("These minutes can no longer be edited."); }
   try {
     if (DB) {
       await change(`UPDATE app_board_minutes__meetings SET title = ?, meeting_date = ?, location = ?, attendees = ?, notes = ?, updated_at = ? WHERE id = ?`,
@@ -426,7 +426,7 @@ async function deleteMeeting(meetingId) {
 
 async function addMotion(meetingId, text, movedBy) {
   const meeting = meetingById(meetingId);
-  if (!meeting || !canEdit(meeting)) return;
+  if (!meeting || !canEdit(meeting)) { closeModal(); return showError("These minutes can no longer be edited."); }
   const order = motionsFor(meetingId).length;
   const motion = {
     id: uid("motion"), meeting_id: meetingId, text, moved_by: movedBy || "", seconded_by: "",
@@ -855,6 +855,7 @@ document.addEventListener("submit", (e) => {
   if (form.id === "meeting-form") {
     e.preventDefault();
     const btn = form.querySelector(".btn-primary");
+    const label = btn?.textContent;
     if (btn) { btn.disabled = true; btn.textContent = "Saving…"; }
     const editId = form.getAttribute("data-edit");
     const patch = {
@@ -862,7 +863,10 @@ document.addEventListener("submit", (e) => {
       location: form.location.value.trim(), attendees: form.attendees.value.trim(), notes: form.notes.value.trim(),
     };
     const p = editId ? saveMeetingNotes(editId, patch) : submitMeetingForm(form);
-    Promise.resolve(p).catch((err) => { if (btn) { btn.disabled = false; btn.textContent = "Save"; } showError(failText(err, "Couldn’t save the minutes — try again.")); });
+    // Both paths can settle with the form still open (a failed create reports
+    // its own error and resolves), so the button is restored either way.
+    Promise.resolve(p).catch((err) => { showError(failText(err, "Couldn’t save the minutes — try again.")); })
+      .finally(() => { if (btn) { btn.disabled = false; btn.textContent = label; } });
     return;
   }
   if (form.id === "motion-form") {
@@ -870,9 +874,11 @@ document.addEventListener("submit", (e) => {
     const btn = form.querySelector(".btn-primary");
     const text = form.text.value.trim();
     if (!text) { form.text.focus(); return; }
+    const label = btn?.textContent;
     if (btn) { btn.disabled = true; btn.textContent = "Adding…"; }
     addMotion(form.getAttribute("data-meeting"), text, form.moved_by.value)
-      .catch((err) => { if (btn) { btn.disabled = false; btn.textContent = "Add motion"; } showError(failText(err, "Couldn’t add the motion — try again.")); });
+      .catch((err) => { showError(failText(err, "Couldn’t add the motion — try again.")); })
+      .finally(() => { if (btn) { btn.disabled = false; btn.textContent = label; } });
     return;
   }
 });
