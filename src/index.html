@@ -384,7 +384,7 @@ async function publishEvent(type, subjectId, payload = {}) {
 
 async function adoptMeeting(meetingId) {
   const meeting = meetingById(meetingId);
-  if (!meeting || !canEdit(meeting)) return;
+  if (!meeting || !canEdit(meeting)) return showError("These minutes can no longer be edited.");
   const ok = await hubConfirm({
     message: "Adopt these minutes?",
     description: "Once adopted, the minutes, motions, and votes become a permanent public record and can no longer be edited.",
@@ -409,7 +409,7 @@ async function adoptMeeting(meetingId) {
 
 async function deleteMeeting(meetingId) {
   const meeting = meetingById(meetingId);
-  if (!meeting || !canEdit(meeting)) return;
+  if (!meeting || !canEdit(meeting)) return showError("These minutes can no longer be edited.");
   const ok = await hubConfirm({ message: "Delete this draft?", description: "Its motions and votes will be removed.", confirmLabel: "Delete", destructive: true });
   if (!ok) return;
   try {
@@ -450,7 +450,7 @@ async function patchMotion(motionId, patch) {
   const motion = motions.find(m => m.id === motionId);
   if (!motion) return;
   const meeting = meetingById(motion.meeting_id);
-  if (!meeting || !canEdit(meeting)) return;
+  if (!meeting || !canEdit(meeting)) return showError("These minutes can no longer be edited.");
   try {
     const cols = Object.keys(patch);
     const set = cols.map(c => `${c} = ?`).join(", ");
@@ -464,7 +464,7 @@ async function deleteMotion(motionId) {
   const motion = motions.find(m => m.id === motionId);
   if (!motion) return;
   const meeting = meetingById(motion.meeting_id);
-  if (!meeting || !canEdit(meeting)) return;
+  if (!meeting || !canEdit(meeting)) return showError("These minutes can no longer be edited.");
   const ok = await hubConfirm({ message: "Remove this motion?", confirmLabel: "Remove", destructive: true });
   if (!ok) return;
   try {
