@@ -78,3 +78,34 @@ export function suggestedOutcome(t) {
 export function searchableFields(item) {
   return [item.title, item.meeting_date, item.location, item.attendees, item.notes];
 }
+
+/**
+ * The line a failed write shows ("Refused, gone, or failed" in the app-template guide):
+ * "try again" only when retrying can work. `thing` and `action` are the app's own nouns
+ * ("motion", "update the motion"). `found` is the caller's re-read after a write that
+ * changed nothing (or a 404/409): false = the row is gone, true = it is there in another
+ * state. A `forUser` error keeps the message the app wrote for it. Never shows hub text.
+ */
+export function failureLine(e, { action, thing, found } = {}) {
+  if (e?.forUser) return e.message;
+  if (e?.code === "UNIQUE_CONSTRAINT" || /UNIQUE constraint failed/i.test(String(e?.message ?? ""))) return `That ${thing} already exists.`;
+  if (e?.status === 403) return `You don’t have permission to ${action}.`;
+  if (e?.status === 507) return "The household’s storage is full — free up space first.";
+  if (found === false || (found === undefined && e?.status === 404)) return `This ${thing} has been removed.`;
+  if (found === true || e?.status === 409 || e?.status === 404) return `This ${thing} was changed by someone else — check it first.`;
+  return `Couldn’t ${action} — try again.`;
+}
+
+/**
+ * A `WHERE id = ?` write to the minutes that changed nothing, after the re-read:
+ *   reread  — false when the re-read itself failed (the outcome is unknown: "try again")
+ *   found   — the row is still there
+ *   adopted — its minutes are adopted now (frozen: their state moved under this write)
+ * A row still there on a draft means the hub narrowed the write away from this member.
+ */
+export function unchangedLine({ reread, found, adopted }, words) {
+  if (!reread) return failureLine(null, words);
+  if (!found) return failureLine(null, { ...words, found: false });
+  if (adopted) return failureLine(null, { ...words, found: true });
+  return failureLine({ status: 403 }, words);
+}

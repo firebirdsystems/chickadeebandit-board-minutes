@@ -130,7 +130,7 @@ import {
 import {
   VOTE_VALUES, MOTION_OUTCOMES, outcomeLabel, isAdult,
   isBoard as _isBoard, isAdopted, canEditMeeting as _canEdit, canShareMeeting,
-  tally, myVote, votesForMotion, suggestedOutcome, searchableFields,
+  tally, myVote, votesForMotion, suggestedOutcome, searchableFields, failureLine, unchangedLine,
 } from "./logic.js";
 import { createShareUi, createOverlayView } from "./share.js";
 
@@ -198,24 +198,32 @@ async function db(sql, params = []) {
     body: JSON.stringify({ sql, params }),
   });
   const json = await res.json().catch(() => null);
-  if (!res.ok || !json || typeof json !== "object" || json.error) throw new Error(json?.error || "Couldn’t reach the hub. Try again.");
+  if (!res.ok || !json || typeof json !== "object" || json.error) throw Object.assign(new Error(json?.error || "Couldn’t reach the hub. Try again."), { status: res.ok ? undefined : res.status, code: json?.code });
   return json;
 }
 
 // Only wording this app wrote for the reader is shown; a hub error is logged
-// and the reader gets the action's own line.
+// and the reader gets the action's own line (`words`: see failureLine).
 function userError(msg) { return Object.assign(new Error(msg), { forUser: true }); }
-function failText(e, line) { if (!e?.forUser) if (!e?.forUser) console.error(e); return e?.forUser ? e.message : line; }
+function failText(e, words) { if (!e?.forUser) console.error(e); return failureLine(e, words); }
+
+// What the re-read shows of a meeting's row (or of one of its rows, `found`).
+function meetingState(meetingId, found) {
+  const m = meetingById(meetingId);
+  return { found: found ?? !!m, adopted: !!m && isAdopted(m) };
+}
 
 // An UPDATE or DELETE of one row. The hub answers 200 with `changed: 0` when
-// the minutes are already adopted (frozen) or the caller is not on the board,
-// so that is re-read and reported rather than shown as saved.
-async function change(sql, params = []) {
+// the minutes are already adopted (frozen), the row is gone, or the caller is
+// not on the board, so that is re-read and reported rather than shown as saved.
+// `locate()` reads the re-read state of the row (see unchangedLine).
+async function change(sql, params, words, locate) {
   const res = await db(sql, params);
   if (res.changed === 0) {
-    await loadData().catch(() => {});
+    let reread = true;
+    await loadData().catch((e) => { console.error(e); reread = false; });
     if (detailId && !meetingById(detailId)) detailId = null;
-    throw userError("Nothing was changed. These minutes may already be adopted, or only the board can edit them.");
+    throw userError(unchangedLine({ reread, ...(reread ? locate() : {}) }, words));
   }
   return res;
 }
@@ -228,7 +236,7 @@ async function saveSetting(key, value) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error ?? "Save failed");
+    throw Object.assign(new Error(err?.error ?? "Save failed"), { status: res.status, code: err?.code });
   }
 }
 
@@ -360,7 +368,7 @@ async function submitMeetingForm(form) {
     tab = "drafts";
     closeDialog(dlg);
     showNotice("Draft minutes created.");
-  } catch (e) { showFormError(failText(e, "Couldn’t create the minutes — try again."), dlg); }
+  } catch (e) { showFormError(failText(e, { action: "create the minutes", thing: "draft" }), dlg); }
 }
 
 async function saveMeetingNotes(meetingId, patch) {
@@ -370,7 +378,8 @@ async function saveMeetingNotes(meetingId, patch) {
   try {
     if (DB) {
       await change(`UPDATE app_board_minutes__meetings SET title = ?, meeting_date = ?, location = ?, attendees = ?, notes = ?, updated_at = ? WHERE id = ?`,
-        [patch.title, patch.meeting_date, patch.location, patch.attendees, patch.notes, nowIso(), meetingId]);
+        [patch.title, patch.meeting_date, patch.location, patch.attendees, patch.notes, nowIso(), meetingId],
+        { action: "save the minutes", thing: "draft" }, () => meetingState(meetingId));
     }
     meetings = meetings.map(m => m.id === meetingId ? { ...m, ...patch } : m);
     closeDialog(dlg);
@@ -408,7 +417,8 @@ async function adoptMeeting(meetingId) {
   if (!ok) return;
   const at = nowIso();
   try {
-    if (DB) await change(`UPDATE app_board_minutes__meetings SET status = 'adopted', adopted_at = ?, updated_at = ? WHERE id = ?`, [at, at, meetingId]);
+    if (DB) await change(`UPDATE app_board_minutes__meetings SET status = 'adopted', adopted_at = ?, updated_at = ? WHERE id = ?`, [at, at, meetingId],
+      { action: "adopt the minutes", thing: "draft" }, () => meetingState(meetingId));
     meetings = meetings.map(m => m.id === meetingId ? { ...m, status: "adopted", adopted_at: at } : m);
     // Adoption is the one transition worth publishing: a draft is board-only,
     // and adoption is exactly the moment the minutes become readable by
@@ -419,7 +429,7 @@ async function adoptMeeting(meetingId) {
       adopted_at: at,
     });
     showNotice("Minutes adopted.");
-  } catch (e) { showError(failText(e, "Couldn’t adopt the minutes — try again.")); }
+  } catch (e) { showError(failText(e, { action: "adopt the minutes", thing: "draft" })); }
 }
 
 async function deleteMeeting(meetingId) {
@@ -428,13 +438,14 @@ async function deleteMeeting(meetingId) {
   const ok = await hubConfirm({ message: "Delete this draft?", description: "Its motions and votes will be removed.", confirmLabel: "Delete", destructive: true });
   if (!ok) return;
   try {
-    if (DB) await change(`DELETE FROM app_board_minutes__meetings WHERE id = ?`, [meetingId]);
+    if (DB) await change(`DELETE FROM app_board_minutes__meetings WHERE id = ?`, [meetingId],
+      { action: "delete the draft", thing: "draft" }, () => meetingState(meetingId));
     meetings = meetings.filter(m => m.id !== meetingId);
     motions = motions.filter(m => m.meeting_id !== meetingId);
     votes = votes.filter(v => v.meeting_id !== meetingId);
     detailId = null;
     showNotice("Draft deleted.");
-  } catch (e) { showError(failText(e, "Couldn’t delete the draft — try again.")); }
+  } catch (e) { showError(failText(e, { action: "delete the draft", thing: "draft" })); }
 }
 
 // ── Motion actions (board only, draft meetings only) ─────────────────────────────
@@ -459,7 +470,7 @@ async function addMotion(meetingId, text, movedBy) {
     motions = [...motions, motion];
     closeDialog(dlg);
     showNotice("Motion added.");
-  } catch (e) { showFormError(failText(e, "Couldn’t add the motion — try again."), dlg); }
+  } catch (e) { showFormError(failText(e, { action: "add the motion", thing: "motion" }), dlg); }
 }
 
 async function patchMotion(motionId, patch) {
@@ -470,10 +481,11 @@ async function patchMotion(motionId, patch) {
   try {
     const cols = Object.keys(patch);
     const set = cols.map(c => `${c} = ?`).join(", ");
-    if (DB) await change(`UPDATE app_board_minutes__motions SET ${set}, updated_at = ? WHERE id = ?`, [...cols.map(c => patch[c]), nowIso(), motionId]);
+    if (DB) await change(`UPDATE app_board_minutes__motions SET ${set}, updated_at = ? WHERE id = ?`, [...cols.map(c => patch[c]), nowIso(), motionId],
+      { action: "update the motion", thing: "motion" }, () => meetingState(motion.meeting_id, motions.some(m => m.id === motionId)));
     motions = motions.map(m => m.id === motionId ? { ...m, ...patch } : m);
     render();
-  } catch (e) { showError(failText(e, "Couldn’t update the motion — try again.")); }
+  } catch (e) { showError(failText(e, { action: "update the motion", thing: "motion" })); }
 }
 
 async function deleteMotion(motionId) {
@@ -489,11 +501,12 @@ async function deleteMotion(motionId) {
     // motion_id pointing at nothing and still counted in the meeting-level
     // tally. The manifest now declares motions → votes(motion_id) in
     // delete_cascades, so the hub deletes them inside this statement's batch.
-    if (DB) await change(`DELETE FROM app_board_minutes__motions WHERE id = ?`, [motionId]);
+    if (DB) await change(`DELETE FROM app_board_minutes__motions WHERE id = ?`, [motionId],
+      { action: "remove the motion", thing: "motion" }, () => meetingState(motion.meeting_id, motions.some(m => m.id === motionId)));
     motions = motions.filter(m => m.id !== motionId);
     votes = votes.filter(v => v.motion_id !== motionId);
     showNotice("Motion removed.");
-  } catch (e) { showError(failText(e, "Couldn’t remove the motion — try again.")); }
+  } catch (e) { showError(failText(e, { action: "remove the motion", thing: "motion" })); }
 }
 
 // ── Voting (each board member records their OWN vote) ────────────────────────────
@@ -507,7 +520,8 @@ async function castVote(motionId, value) {
   try {
     if (existing) {
       if (existing.vote === value) return; // no change
-      if (DB) await change(`UPDATE app_board_minutes__votes SET vote = ?, updated_at = ? WHERE id = ?`, [value, nowIso(), existing.id]);
+      if (DB) await change(`UPDATE app_board_minutes__votes SET vote = ?, updated_at = ? WHERE id = ?`, [value, nowIso(), existing.id],
+        { action: "record your vote", thing: "vote" }, () => meetingState(meeting.id, votes.some(v => v.id === existing.id)));
       votes = votes.map(v => v.id === existing.id ? { ...v, vote: value } : v);
     } else {
       const vote = { id: uid("vote"), meeting_id: meeting.id, motion_id: motionId, voter_id: ME.id, vote: value, created_at: nowIso(), updated_at: nowIso() };
@@ -521,7 +535,7 @@ async function castVote(motionId, value) {
       votes = [...votes, vote];
     }
     render();
-  } catch (e) { showError(failText(e, "Couldn’t record your vote — try again.")); }
+  } catch (e) { showError(failText(e, { action: "record your vote", thing: "vote" })); }
 }
 
 // ── Modals ──────────────────────────────────────────────────────────────────────
@@ -636,7 +650,7 @@ window.saveSettings = async function () {
     render();
   } catch (e) {
     if (btn) { btn.disabled = false; btn.textContent = "Save"; }
-    showFormError(failText(e, "Couldn’t save the settings — try again."), dlg);
+    showFormError(failText(e, { action: "save the settings", thing: "setting" }), dlg);
   }
 };
 
@@ -890,7 +904,7 @@ document.addEventListener("submit", (e) => {
     const p = editId ? saveMeetingNotes(editId, patch) : submitMeetingForm(form);
     // Both paths can settle with the form still open (a failed create reports
     // its own error and resolves), so the button is restored either way.
-    Promise.resolve(p).catch((err) => { showFormError(failText(err, "Couldn’t save the minutes — try again."), dlg); })
+    Promise.resolve(p).catch((err) => { showFormError(failText(err, { action: editId ? "save the minutes" : "create the minutes", thing: "draft" }), dlg); })
       .finally(() => { if (btn) { btn.disabled = false; btn.textContent = label; } });
     return;
   }
@@ -904,7 +918,7 @@ document.addEventListener("submit", (e) => {
     clearFormError();
     const dlg = modalEl;
     addMotion(form.getAttribute("data-meeting"), text, form.moved_by.value)
-      .catch((err) => { showFormError(failText(err, "Couldn’t add the motion — try again."), dlg); })
+      .catch((err) => { showFormError(failText(err, { action: "add the motion", thing: "motion" }), dlg); })
       .finally(() => { if (btn) { btn.disabled = false; btn.textContent = label; } });
     return;
   }
