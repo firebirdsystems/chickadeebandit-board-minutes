@@ -317,17 +317,31 @@ async function refresh() {
 function clearMessages() { error = ""; notice = ""; }
 function showError(m) { error = m; notice = ""; render(); }
 function showNotice(m) { notice = m; error = ""; render(); }
+// The page's own error line sits behind the backdrop while a form is open, so
+// a form's failure is reported inside it. With no form open it goes to the page.
+// `dlg` is the dialog that submitted: once it is cancelled or replaced, its
+// failure goes to the page, never into a dialog opened since.
+function showFormError(m, dlg = modalEl) {
+  const el = dlg && dlg === modalEl ? dlg.querySelector(".modal-error") : null;
+  if (!el) return showError(m);
+  el.textContent = m;
+  el.hidden = !m;
+  render(); // a refused save re-read the minutes; the page behind shows them
+}
+function clearFormError() { const el = modalEl?.querySelector(".modal-error"); if (el) { el.textContent = ""; el.hidden = true; } }
+const FORM_ERROR = `<div class="error modal-error" data-testid="form-error" role="alert" hidden></div>`;
 
 // ── Meeting actions (board only) ────────────────────────────────────────────────
 
 async function submitMeetingForm(form) {
-  if (!isBoard()) return showError("Only the board can create minutes.");
+  const dlg = modalEl;
+  if (!isBoard()) return showFormError("Only the board can create minutes.");
   const title = form.title.value.trim();
   const meeting_date = form.meeting_date.value;
   const location = form.location.value.trim();
   const attendees = form.attendees.value.trim();
   const notes = form.notes.value.trim();
-  if (!title || !meeting_date) { showError("Add a title and a meeting date."); return; }
+  if (!title || !meeting_date) { showFormError("Add a title and a meeting date."); return; }
   const meeting = {
     id: uid("meeting"), title, meeting_date, location, attendees, notes,
     status: "draft", created_by: ME.id, created_at: nowIso(), updated_at: nowIso(), adopted_at: null,
@@ -344,12 +358,13 @@ async function submitMeetingForm(form) {
     meetings = [meeting, ...meetings];
     detailId = meeting.id;
     tab = "drafts";
-    closeModal();
+    closeDialog(dlg);
     showNotice("Draft minutes created.");
-  } catch (e) { showError(failText(e, "Couldn’t create the minutes — try again.")); }
+  } catch (e) { showFormError(failText(e, "Couldn’t create the minutes — try again."), dlg); }
 }
 
 async function saveMeetingNotes(meetingId, patch) {
+  const dlg = modalEl;
   const meeting = meetingById(meetingId);
   if (!meeting || !canEdit(meeting)) { closeModal(); return showError("These minutes can no longer be edited."); }
   try {
@@ -358,12 +373,12 @@ async function saveMeetingNotes(meetingId, patch) {
         [patch.title, patch.meeting_date, patch.location, patch.attendees, patch.notes, nowIso(), meetingId]);
     }
     meetings = meetings.map(m => m.id === meetingId ? { ...m, ...patch } : m);
-    closeModal();
+    closeDialog(dlg);
     showNotice("Minutes updated.");
   } catch (e) {
     // Minutes that can no longer be edited: the form has nothing left to save.
     const current = meetingById(meetingId);
-    if (!current || !canEdit(current)) closeModal();
+    if (!current || !canEdit(current)) closeDialog(dlg);
     throw e; // the form's submit handler re-enables Save and shows the message
   }
 }
@@ -425,6 +440,7 @@ async function deleteMeeting(meetingId) {
 // ── Motion actions (board only, draft meetings only) ─────────────────────────────
 
 async function addMotion(meetingId, text, movedBy) {
+  const dlg = modalEl;
   const meeting = meetingById(meetingId);
   if (!meeting || !canEdit(meeting)) { closeModal(); return showError("These minutes can no longer be edited."); }
   const order = motionsFor(meetingId).length;
@@ -441,9 +457,9 @@ async function addMotion(meetingId, text, movedBy) {
       );
     }
     motions = [...motions, motion];
-    closeModal();
+    closeDialog(dlg);
     showNotice("Motion added.");
-  } catch (e) { showError(failText(e, "Couldn’t add the motion — try again.")); }
+  } catch (e) { showFormError(failText(e, "Couldn’t add the motion — try again."), dlg); }
 }
 
 async function patchMotion(motionId, patch) {
@@ -521,6 +537,8 @@ function openModal(html) {
   if (first) first.focus();
 }
 function closeModal() { modalEl?.remove(); modalEl = null; }
+// Close the dialog that submitted, only if it is still the open one.
+function closeDialog(dlg) { if (dlg === modalEl) closeModal(); }
 window.closeModal = closeModal;
 
 function meetingFormFields(m) {
@@ -553,6 +571,7 @@ window.openMeetingModal = function (meetingId) {
     <h3>${m ? "Edit minutes" : "New minutes"}</h3>
     <form id="meeting-form" ${m ? `data-edit="${esc(m.id)}"` : ""}>
       ${meetingFormFields(m)}
+      ${FORM_ERROR}
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
         <button type="submit" class="btn btn-primary">${m ? "Save" : "Create draft"}</button>
@@ -573,6 +592,7 @@ window.openMotionModal = function (meetingId) {
         <label for="mo-moved">Moved by <span style="text-transform:none;font-weight:600">(optional)</span></label>
         <select id="mo-moved" name="moved_by"><option value="">—</option>${opts}</select>
       </div>
+      ${FORM_ERROR}
       <div class="modal-actions">
         <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
         <button type="submit" class="btn btn-primary">Add motion</button>
@@ -596,6 +616,7 @@ window.openSettingsModal = function () {
   openModal(`
     <h3>${glyph("gear")} Board Minutes settings</h3>
     ${controls}
+    ${FORM_ERROR}
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Close</button>
       ${IS_ADMIN ? `<button class="btn btn-primary" onclick="saveSettings()">Save</button>` : ""}
@@ -604,16 +625,18 @@ window.openSettingsModal = function () {
 
 window.saveSettings = async function () {
   const groupId = document.getElementById("s-group").value || null;
+  const dlg = modalEl;
   const btn = modalEl?.querySelector(".modal-actions .btn-primary");
   if (btn) { btn.disabled = true; btn.textContent = "Saving…"; }
+  clearFormError();
   try {
     await saveSetting("board_group_id", groupId ?? "");
     settings.board_group_id = groupId;
-    closeModal();
+    closeDialog(dlg);
     render();
   } catch (e) {
     if (btn) { btn.disabled = false; btn.textContent = "Save"; }
-    showError(failText(e, "Couldn’t save the settings — try again."));
+    showFormError(failText(e, "Couldn’t save the settings — try again."), dlg);
   }
 };
 
@@ -857,6 +880,8 @@ document.addEventListener("submit", (e) => {
     const btn = form.querySelector(".btn-primary");
     const label = btn?.textContent;
     if (btn) { btn.disabled = true; btn.textContent = "Saving…"; }
+    clearFormError();
+    const dlg = modalEl;
     const editId = form.getAttribute("data-edit");
     const patch = {
       title: form.title.value.trim(), meeting_date: form.meeting_date.value,
@@ -865,7 +890,7 @@ document.addEventListener("submit", (e) => {
     const p = editId ? saveMeetingNotes(editId, patch) : submitMeetingForm(form);
     // Both paths can settle with the form still open (a failed create reports
     // its own error and resolves), so the button is restored either way.
-    Promise.resolve(p).catch((err) => { showError(failText(err, "Couldn’t save the minutes — try again.")); })
+    Promise.resolve(p).catch((err) => { showFormError(failText(err, "Couldn’t save the minutes — try again."), dlg); })
       .finally(() => { if (btn) { btn.disabled = false; btn.textContent = label; } });
     return;
   }
@@ -876,8 +901,10 @@ document.addEventListener("submit", (e) => {
     if (!text) { form.text.focus(); return; }
     const label = btn?.textContent;
     if (btn) { btn.disabled = true; btn.textContent = "Adding…"; }
+    clearFormError();
+    const dlg = modalEl;
     addMotion(form.getAttribute("data-meeting"), text, form.moved_by.value)
-      .catch((err) => { showError(failText(err, "Couldn’t add the motion — try again.")); })
+      .catch((err) => { showFormError(failText(err, "Couldn’t add the motion — try again."), dlg); })
       .finally(() => { if (btn) { btn.disabled = false; btn.textContent = label; } });
     return;
   }
